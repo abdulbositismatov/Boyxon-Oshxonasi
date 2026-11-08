@@ -19,8 +19,9 @@ services:
     region: frankfurt
     # Repo ildizidan nisbiy yo'l — server shu papkada build/start bo'ladi
     rootDir: boyxon/server
-    # 1) bog'liqliklar  2) TypeScript → dist/  (AYNAN SHU QADAM YETISHMAYOTGAN EDI)
-    buildCommand: npm install && npm run build
+    # 1) client (SPA) build  2) server TypeScript → dist/
+    # Frontend endi shu servisdan beriladi (bitta origin → cross-site cookie yo'q).
+    buildCommand: cd ../client && npm install && npm run build && cd ../server && npm install && npm run build
     startCommand: npm start
     healthCheckPath: /health
     autoDeployTrigger: commit
@@ -37,8 +38,16 @@ services:
       # tsc build yoki socket runtime "heap out of memory" bilan qulaydi.
       - key: NODE_OPTIONS
         value: "--max-old-space-size=460"
+      # --- Bitta origin (frontend + API shu servisdan) ---
+      # CLIENT_URL'ning birinchisi OAuth redirect va email havolalari uchun ishlatiladi.
+      - key: CLIENT_URL
+        value: https://boyxon-server.onrender.com
+      - key: GOOGLE_CALLBACK_URL
+        value: https://boyxon-server.onrender.com/api/auth/google/callback
+      # Client build vaqtida canonical/OG/sitemap uchun sayt manzili.
+      - key: VITE_SITE_URL
+        value: https://boyxon-server.onrender.com
       # --- Quyidagilar Dashboard → Environment'da `sync: false` bilan qo'shiladi ---
-      # CLIENT_URL            = https://boyxon-client.onrender.com
       # MONGODB_URI           = mongodb+srv://...
       # JWT_ACCESS_SECRET     = (48 hex)
       # JWT_REFRESH_SECRET    = (48 hex)
@@ -47,11 +56,13 @@ services:
       # ADMIN_PASSWORD        = (kuchli, >=12)
       # SMTP_USER / SMTP_PASS = (ixtiyoriy)
       # VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY / VAPID_EMAIL
-      # GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET / GOOGLE_CALLBACK_URL
+      # GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET
       # CLOUDINARY_* (ixtiyoriy)
 
   # ---------------------------------------------------------
-  # Frontend (Vite → statik sayt)
+  # LEGACY: alohida statik frontend (ixtiyoriy zaxira).
+  # Yangi arxitektura — frontend `boyxon-server` servisidan beriladi.
+  # Tekshiruvdan keyin bu servisni Render Dashboard'dan o'chirish mumkin.
   # ---------------------------------------------------------
   - type: static_site
     name: boyxon-client

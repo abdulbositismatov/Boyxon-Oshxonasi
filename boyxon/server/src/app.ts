@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
 import path from 'node:path';
+import { existsSync } from 'node:fs';
 import { corsOrigins, env, isProd } from './config/env';
 import { initPassport } from './config/passport';
 import { errorHandler } from './middlewares/error.middleware';
@@ -23,6 +24,28 @@ import { settingsRouter } from './routes/setting.routes';
 import { adminRouter } from './routes/admin.routes';
 import { apiRobots, sitemap } from './controllers/seo.controller';
 
+/**
+ * SPA HTML va statik fayllar uchun CSP. Ilgari bu Render static site
+ * sozlamasida (`render.yaml`) turardi; endi frontend backend'dan beriladi.
+ * `connect-src 'self'` API va WebSocket'ni (wss) ham qamrab oladi.
+ */
+const SITE_CSP = [
+  "default-src 'self'",
+  "base-uri 'self'",
+  "object-src 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+  "script-src 'self'",
+  "style-src 'self' 'unsafe-inline'",
+  "img-src 'self' data: blob: https://res.cloudinary.com https://tile.openstreetmap.org",
+  "font-src 'self' data:",
+  "connect-src 'self' https://boyxon-server.onrender.com wss://boyxon-server.onrender.com https://nominatim.openstreetmap.org",
+  "manifest-src 'self'",
+  "worker-src 'self' blob:",
+  "upgrade-insecure-requests",
+  "trusted-types 'safe-script' 'safe-url' 'html'",
+].join('; ');
+
 export function createApp() {
   const app = express();
 
@@ -38,18 +61,25 @@ export function createApp() {
   app.use(
     helmet({
       crossOriginResourcePolicy: false,
-      // API javoblarida MIME-sniffing va frame-ga joylashni to'samiz.
-      contentSecurityPolicy: {
-        useDefaults: true,
-        directives: {
-          defaultSrc: ["'none'"],
-          frameAncestors: ["'none'"],
-          baseUri: ["'none'"],
-          formAction: ["'none'"],
-        },
-      },
+      // CSP faqat API javoblariga qo'llanadi (pastda). SPA HTML uchun sayt CSP'si
+      // ishlatiladi — aks holda `default-src 'none'` butun frontend'ni bloklaydi.
+      contentSecurityPolicy: false,
       referrerPolicy: { policy: 'no-referrer' },
       hsts: isProd ? { maxAge: 31536000, includeSubDomains: true, preload: true } : false,
+    }),
+  );
+
+  // API javoblari uchun qat'iy CSP (HTML emas — API hech narsa render qilmaydi).
+  app.use(
+    '/api',
+    helmet.contentSecurityPolicy({
+      useDefaults: true,
+      directives: {
+        defaultSrc: ["'none'"],
+        frameAncestors: ["'none'"],
+        baseUri: ["'none'"],
+        formAction: ["'none'"],
+      },
     }),
   );
 
@@ -119,6 +149,61 @@ export function createApp() {
   app.use('/api/chat', chatRouter);
   app.use('/api/settings', settingsRouter);
   app.use('/api/admin', adminRouter);
+
+  /**
+   * Production'da SPA'ni shu serverning o'zidan beramiz (bitta origin).
+   *
+   * Sabab: `onrender.com` public suffix ro'yxatida, shuning uchun
+   * `boyxon-client.onrender.com` va `boyxon-server.onrender.com` brauzer uchun
+   * cross-site hisoblanadi va refresh-cookie ba'zi brauzerlarda bloklanadi.
+   * Bitta origin (`boyxon-server.onrender.com`) bu muammoni butunlay yo'q qiladi.
+   */
+  if (!isWorkersRuntime && isProd) {
+    // dist/app.js → ../../client/dist = boyxon/client/dist
+    const clientDist = path.resolve(__dirname, '../../client/dist');
+    const indexHtml = path.join(clientDist, 'index.html');
+
+    if (existsSync(indexHtml)) {
+      app.use(
+        express.static(clientDist, {
+          index: false,
+          setHeaders(res, filePath) {
+            res.setHeader('Content-Security-Policy', SITE_CSP);
+            if (filePath.endsWith('index.html')) {
+              res.setHeader('Cache-Control', 'no-cache');
+            } else if (/[\\/]assets[\\/]/.test(filePath)) {
+              // Vite hash'li asset'lar — abadiy keshlanadi.
+              res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            } else {
+              res.setHeader('Cache-Control', 'public, max-age=3600');
+            }
+          },
+        }),
+      );
+
+      // SPA fallback: API/health/ws/uploads/SEO yo'llaridan tashqari hamma GET.
+      app.get('*', (req, res, next) => {
+        if (
+          req.path.startsWith('/api') ||
+          req.path.startsWith('/uploads') ||
+          req.path === '/health' ||
+          req.path === '/ws' ||
+          req.path === '/sitemap.xml' ||
+          req.path === '/robots.txt' ||
+          // Fayl kengaytmasi bor yo'l topilmasa — HTML emas, 404 qaytaramiz
+          // (aks holda brauzer JS/CSS o'rniga HTML olib MIME xatosi beradi).
+          path.extname(req.path) !== ''
+        ) {
+          return next();
+        }
+        res.setHeader('Content-Security-Policy', SITE_CSP);
+        res.setHeader('Cache-Control', 'no-cache');
+        res.sendFile(indexHtml);
+      });
+    } else {
+      console.warn(`⚠️  Client dist topilmadi: ${clientDist} — SPA berilmaydi`);
+    }
+  }
 
   app.use((_req, res) => {
     res.status(404).json({ success: false, message: 'Topilmadi', data: null });

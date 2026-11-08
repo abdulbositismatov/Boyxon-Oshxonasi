@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "dev:local": "tsx watch src/run-local.ts",
+    "prebuild": "node scripts/ensure-client-build.cjs",
     "build": "tsc",
     "prestart": "node --max-old-space-size=460 ./node_modules/typescript/bin/tsc",
     "start": "node dist/index.js",
