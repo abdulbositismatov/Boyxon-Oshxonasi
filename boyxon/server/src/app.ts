@@ -129,9 +129,23 @@ export function createApp() {
     res.json({ success: true, message: 'Boyxon API ishlayapti', data: { time: new Date().toISOString() } });
   });
 
-  // SEO: sitemap va API robots.txt (client robots.txt shu manzilga ishora qiladi).
+  // SEO: sitemap har doim dinamik (taomlar bazadan olinadi).
   app.get('/sitemap.xml', sitemap);
-  app.get('/robots.txt', apiRobots);
+
+  /**
+   * `/robots.txt` qaysi variantda berilishini oldindan aniqlaymiz:
+   *  - SPA shu serverdan berilsa — sayt robots.txt'i (client build yozadi:
+   *    private yo'llar + `Sitemap:` qatori) statik fayl sifatida ketadi;
+   *  - API-only rejimda — qat'iy `apiRobots` (faqat /api/ yopiladi).
+   *
+   * Ilgari bu yerda doim `apiRobots` turardi; bitta origin'ga o'tgach u
+   * qidiruv robotlariga saytni emas, API'ni tavsiflab berardi.
+   */
+  const clientDist = path.resolve(__dirname, '../../client/dist');
+  const clientIndexHtml = path.join(clientDist, 'index.html');
+  const servesSpa = !isWorkersRuntime && isProd && existsSync(clientIndexHtml);
+
+  if (!servesSpa) app.get('/robots.txt', apiRobots);
 
   app.use('/api', (_req, res, next) => {
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
@@ -158,51 +172,45 @@ export function createApp() {
    * cross-site hisoblanadi va refresh-cookie ba'zi brauzerlarda bloklanadi.
    * Bitta origin (`boyxon-server.onrender.com`) bu muammoni butunlay yo'q qiladi.
    */
-  if (!isWorkersRuntime && isProd) {
-    // dist/app.js → ../../client/dist = boyxon/client/dist
-    const clientDist = path.resolve(__dirname, '../../client/dist');
-    const indexHtml = path.join(clientDist, 'index.html');
+  if (servesSpa) {
+    app.use(
+      express.static(clientDist, {
+        index: false,
+        setHeaders(res, filePath) {
+          res.setHeader('Content-Security-Policy', SITE_CSP);
+          if (filePath.endsWith('index.html')) {
+            res.setHeader('Cache-Control', 'no-cache');
+          } else if (/[\\/]assets[\\/]/.test(filePath)) {
+            // Vite hash'li asset'lar — abadiy keshlanadi.
+            res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+          } else {
+            res.setHeader('Cache-Control', 'public, max-age=3600');
+          }
+        },
+      }),
+    );
 
-    if (existsSync(indexHtml)) {
-      app.use(
-        express.static(clientDist, {
-          index: false,
-          setHeaders(res, filePath) {
-            res.setHeader('Content-Security-Policy', SITE_CSP);
-            if (filePath.endsWith('index.html')) {
-              res.setHeader('Cache-Control', 'no-cache');
-            } else if (/[\\/]assets[\\/]/.test(filePath)) {
-              // Vite hash'li asset'lar — abadiy keshlanadi.
-              res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-            } else {
-              res.setHeader('Cache-Control', 'public, max-age=3600');
-            }
-          },
-        }),
-      );
-
-      // SPA fallback: API/health/ws/uploads/SEO yo'llaridan tashqari hamma GET.
-      app.get('*', (req, res, next) => {
-        if (
-          req.path.startsWith('/api') ||
-          req.path.startsWith('/uploads') ||
-          req.path === '/health' ||
-          req.path === '/ws' ||
-          req.path === '/sitemap.xml' ||
-          req.path === '/robots.txt' ||
-          // Fayl kengaytmasi bor yo'l topilmasa — HTML emas, 404 qaytaramiz
-          // (aks holda brauzer JS/CSS o'rniga HTML olib MIME xatosi beradi).
-          path.extname(req.path) !== ''
-        ) {
-          return next();
-        }
-        res.setHeader('Content-Security-Policy', SITE_CSP);
-        res.setHeader('Cache-Control', 'no-cache');
-        res.sendFile(indexHtml);
-      });
-    } else {
-      console.warn(`⚠️  Client dist topilmadi: ${clientDist} — SPA berilmaydi`);
-    }
+    // SPA fallback: API/health/ws/uploads/SEO yo'llaridan tashqari hamma GET.
+    app.get('*', (req, res, next) => {
+      if (
+        req.path.startsWith('/api') ||
+        req.path.startsWith('/uploads') ||
+        req.path === '/health' ||
+        req.path === '/ws' ||
+        req.path === '/sitemap.xml' ||
+        req.path === '/robots.txt' ||
+        // Fayl kengaytmasi bor yo'l topilmasa — HTML emas, 404 qaytaramiz
+        // (aks holda brauzer JS/CSS o'rniga HTML olib MIME xatosi beradi).
+        path.extname(req.path) !== ''
+      ) {
+        return next();
+      }
+      res.setHeader('Content-Security-Policy', SITE_CSP);
+      res.setHeader('Cache-Control', 'no-cache');
+      res.sendFile(clientIndexHtml);
+    });
+  } else if (!isWorkersRuntime && isProd) {
+    console.warn(`⚠️  Client dist topilmadi: ${clientDist} — SPA berilmaydi`);
   }
 
   app.use((_req, res) => {
