@@ -21,7 +21,9 @@ services:
     rootDir: boyxon/server
     # 1) client (SPA) build  2) server TypeScript → dist/
     # Frontend endi shu servisdan beriladi (bitta origin → cross-site cookie yo'q).
-    buildCommand: cd ../client && npm install && npm run build && cd ../server && npm install && npm run build
+    # `--include=dev` SHART: Render `NODE_ENV=production` berganda oddiy `npm install`
+    # vite/typescript kabi devDependencies'ni o'tkazib yuboradi va client build yiqiladi.
+    buildCommand: cd ../client && npm install --include=dev && npm run build && cd ../server && npm install --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /health
     autoDeployTrigger: commit
