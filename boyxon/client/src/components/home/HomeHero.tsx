@@ -162,25 +162,25 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
             <span className="text-white/70 shrink-0 font-medium">Tezkor tanlov:</span>
             <button
-              onClick={() => handleShortcut('palov')}
+              onClick={() => handleShortcut('palovlar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               👑 Palovlar
             </button>
             <button
-              onClick={() => handleShortcut('samsa')}
+              onClick={() => handleShortcut('somsa')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🥟 Somsalar
             </button>
             <button
-              onClick={() => handleShortcut('kabob')}
+              onClick={() => handleShortcut('kaboblar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🥩 Qozon kabob
             </button>
             <button
-              onClick={() => handleShortcut('soup')}
+              onClick={() => handleShortcut('shorvalar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🍲 Sho'rvalar
