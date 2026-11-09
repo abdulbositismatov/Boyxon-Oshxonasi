@@ -82,14 +82,15 @@ export function ProfileCard({ user }: { user: UserType }) {
             <User className="h-8 w-8" />
           </div>
         )}
-        <Button
+        <button
+          type="button"
           onClick={() => fileRef.current?.click()}
           disabled={uploading}
-          className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full border border-ink-line bg-surface text-ink-700 shadow-sm hover:bg-surface-raised disabled:opacity-60"
+          className="absolute -bottom-1 -right-1 grid h-8 w-8 place-items-center rounded-full border border-ink-line bg-surface text-ink-700 shadow-sm hover:bg-surface-raised disabled:cursor-not-allowed disabled:opacity-60"
           aria-label={t('profile.upload_avatar')}
         >
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
-        </Button>
+        </button>
         <input
           ref={fileRef}
           type="file"
