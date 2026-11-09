@@ -144,7 +144,7 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
           >
             <span>{t('home.hero_cta_menu')}</span>
             <ArrowDown className="h-4 w-4" />
-          </button>
+          </Button>
 
           {dishes.length > 0 && (
             <Button
@@ -153,7 +153,7 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
             >
               <Dices className="h-4 w-4 text-amber-300 animate-spin-slow" />
               <span>{t('home.hero_cta_random')}</span>
-            </button>
+            </Button>
           )}
         </div>
 
@@ -166,25 +166,25 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               👑 Palovlar
-            </button>
+            </Button>
             <Button
               onClick={() => handleShortcut('somsa')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🥟 Somsalar
-            </button>
+            </Button>
             <Button
               onClick={() => handleShortcut('kaboblar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🥩 Qozon kabob
-            </button>
+            </Button>
             <Button
               onClick={() => handleShortcut('shorvalar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🍲 Sho'rvalar
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -254,7 +254,7 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
               >
                 <Dices className={`h-4 w-4 text-primary-500 ${isSpinning ? 'animate-spin' : ''}`} />
                 <span>{t('home.random_spin')}</span>
-              </button>
+              </Button>
             </div>
           </div>
         )}

@@ -71,7 +71,7 @@ export function DishFilterSheet({ open, onClose, value, onApply }: Props) {
                 className={`rounded-full border px-3 py-1.5 text-sm ${draft.rating === r || (r === 0 && !draft.rating) ? 'border-primary-500 bg-primary-50 text-primary-800' : 'border-ink-line'}`}
               >
                 {r === 0 ? t('filter.all') : `${r}+`}
-              </button>
+              </Button>
             ))}
           </div>
         </div>
@@ -92,7 +92,7 @@ export function DishFilterSheet({ open, onClose, value, onApply }: Props) {
                   className={`rounded-full border px-3 py-1.5 text-sm ${on ? 'border-primary-500 bg-primary-50 text-primary-800' : 'border-ink-line'}`}
                 >
                   {t(tag.k)}
-                </button>
+                </Button>
               );
             })}
           </div>
@@ -108,7 +108,7 @@ export function DishFilterSheet({ open, onClose, value, onApply }: Props) {
                 className={`rounded-full border px-3 py-1.5 text-sm ${draft.sort === s.v ? 'border-primary-500 bg-primary-50 text-primary-800' : 'border-ink-line'}`}
               >
                 {t(s.k)}
-              </button>
+              </Button>
             ))}
           </div>
         </div>

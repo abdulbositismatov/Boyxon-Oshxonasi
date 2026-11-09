@@ -61,7 +61,7 @@ export function AdminSidebar() {
           className="mt-auto rounded-xl px-3 py-2.5 text-left text-sm font-medium text-white/60 hover:bg-white/10"
         >
           {t('nav.logout')}
-        </button>
+        </Button>
       </aside>
 
       {/* Mobile nav */}

@@ -197,7 +197,7 @@ export default function HomePage() {
           aria-label={t('filter.title')}
         >
           <SlidersHorizontal className="h-5 w-5" />
-        </button>
+        </Button>
       </div>
 
       {/* Jozibali Boyxon Hero Banneri */}
@@ -245,7 +245,7 @@ export default function HomePage() {
             <p className="text-sm text-danger">{t('home.load_error')}</p>
             <Button onClick={() => void refetch()} className="mt-2 text-sm font-semibold text-primary-600">
               {t('common.retry')}
-            </button>
+            </Button>
           </div>
         ) : (
           <DishGrid dishes={data?.data} loading={isLoading || isFetching} />
@@ -259,7 +259,7 @@ export default function HomePage() {
               className="h-10 rounded-full border border-ink-line px-4 text-sm disabled:opacity-40"
             >
               ← {t('common.prev')}
-            </button>
+            </Button>
             <span className="px-2 text-sm text-ink-300">{page} / {pages}</span>
             <Button
               disabled={page >= pages}
@@ -267,7 +267,7 @@ export default function HomePage() {
               className="h-10 rounded-full border border-ink-line px-4 text-sm disabled:opacity-40"
             >
               {t('common.next')} →
-            </button>
+            </Button>
           </div>
         )}
       </section>

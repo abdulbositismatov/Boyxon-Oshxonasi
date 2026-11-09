@@ -91,7 +91,7 @@ export default function ResetPasswordPage() {
               className="mt-3 text-xs font-medium text-ink-300 underline"
             >
               {t('auth.reset_back')}
-            </button>
+            </Button>
           </>
         )}
         {mode === 'form' && (

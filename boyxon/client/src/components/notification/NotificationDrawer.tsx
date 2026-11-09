@@ -39,7 +39,7 @@ export function NotificationDrawer() {
       {!!data?.data.length && (
         <Button onClick={markAll} className="mb-2 text-sm font-medium text-primary-600">
           {t('notifications.mark_all_read')}
-        </button>
+        </Button>
       )}
       <div className="flex flex-col gap-1">
         {isLoading && <p className="py-6 text-center text-sm text-ink-300">{t('common.loading')}</p>}

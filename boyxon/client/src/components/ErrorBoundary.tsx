@@ -72,7 +72,7 @@ export class ErrorBoundary extends Component<Props, State> {
               className="mt-4 text-sm font-semibold text-primary-600 hover:underline"
             >
               {t('errors.boundary_reload')}
-            </button>
+            </Button>
           </div>
         </div>
       );
@@ -91,7 +91,7 @@ export class ErrorBoundary extends Component<Props, State> {
             className="mt-5 h-12 w-full rounded-full bg-gradient-to-r from-primary-500 to-[#F39C12] text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
           >
             {t('errors.boundary_reload')}
-          </button>
+          </Button>
           <a
             href="/"
             className="mt-3 inline-block text-sm font-medium text-primary-600 hover:underline"

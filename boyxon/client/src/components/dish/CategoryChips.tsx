@@ -67,7 +67,7 @@ export function CategoryChips({ categories, active, onChange }: Props) {
           >
             <Icon className={cn('h-4 w-4 transition-transform duration-200', isActive && 'scale-110')} />
             {label}
-          </button>
+          </Button>
         );
       })}
     </div>

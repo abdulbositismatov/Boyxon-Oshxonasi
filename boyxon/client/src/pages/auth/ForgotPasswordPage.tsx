@@ -72,7 +72,7 @@ export default function ForgotPasswordPage() {
           className="mt-4 text-xs font-medium text-ink-300 underline"
         >
           {t('auth.reset_back')}
-        </button>
+        </Button>
       </div>
     </div>
   );

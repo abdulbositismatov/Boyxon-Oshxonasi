@@ -220,7 +220,7 @@ export default function VerifyEmailPage() {
                 : resending
                   ? t('common.loading')
                   : t('auth.verify_resend')}
-            </button>
+            </Button>
 
             <button
               type="button"

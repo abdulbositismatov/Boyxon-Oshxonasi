@@ -25,6 +25,6 @@ export function NotificationBell() {
           {count}
         </span>
       )}
-    </button>
+    </Button>
   );
 }

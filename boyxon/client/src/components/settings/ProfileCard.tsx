@@ -89,7 +89,7 @@ export function ProfileCard({ user }: { user: UserType }) {
           aria-label={t('profile.upload_avatar')}
         >
           {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
-        </button>
+        </Button>
         <input
           ref={fileRef}
           type="file"

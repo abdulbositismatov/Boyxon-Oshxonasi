@@ -36,6 +36,6 @@ export function NotificationItem({
         <span className="mt-0.5 block text-xs text-ink-300">{formatDate(n.createdAt)}</span>
       </span>
       {!n.isRead && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary-500" />}
-    </button>
+    </Button>
   );
 }

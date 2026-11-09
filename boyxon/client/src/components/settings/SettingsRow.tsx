@@ -29,6 +29,6 @@ export function SettingsRow({ icon: Icon, label, value, onClick, danger, right }
   return (
     <Button onClick={onClick} className="flex w-full items-center gap-3 px-4 py-3.5 text-left hover:bg-surface-raised">
       {content}
-    </button>
+    </Button>
   );
 }

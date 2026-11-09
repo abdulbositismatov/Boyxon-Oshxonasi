@@ -35,7 +35,7 @@ export default function AdminOrders() {
             }`}
           >
             {t(f.k)}
-          </button>
+          </Button>
         ))}
       </div>
       <OrdersTable orders={data?.data ?? []} loading={isLoading} />

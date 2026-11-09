@@ -56,7 +56,7 @@ export function UsersTable({ users, loading }: { users: User[]; loading?: boolea
                   className={`rounded-full px-2.5 py-1 text-xs font-semibold ${u.isActive ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'}`}
                 >
                   {u.isActive ? t('common.active') : t('admin.blocked')}
-                </button>
+                </Button>
               </td>
             </tr>
           ))}

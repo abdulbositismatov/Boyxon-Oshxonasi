@@ -217,7 +217,7 @@ export default function SettingsPage() {
                   className={`rounded-full px-2.5 py-1 text-xs font-semibold ${i18n.language === l.v ? 'bg-primary-700 text-white' : 'bg-surface-raised text-ink-700'}`}
                 >
                   {l.v.toUpperCase()}
-                </button>
+                </Button>
               ))}
             </div>
           }

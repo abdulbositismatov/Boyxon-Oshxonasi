@@ -268,7 +268,7 @@ export default function OrderDetailPage() {
                             <Star
                               className={`h-6 w-6 ${n <= (value?.rating ?? 0) ? 'fill-[#FDAB12] text-[#FDAB12]' : 'text-ink-300'}`}
                             />
-                          </button>
+                          </Button>
                         ))}
                       </div>
                       {(value?.rating ?? 0) > 0 && (

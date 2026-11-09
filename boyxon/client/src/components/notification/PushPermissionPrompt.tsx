@@ -44,18 +44,18 @@ export function PushPermissionPrompt() {
               className="h-9 flex-1 rounded-full bg-primary-700 text-sm font-semibold text-white hover:bg-primary-800"
             >
               {t('notifications.allow')}
-            </button>
+            </Button>
             <Button
               onClick={() => dismiss(false)}
               className="h-9 rounded-full border border-ink-line px-4 text-sm font-medium text-ink-700"
             >
               {t('notifications.later')}
-            </button>
+            </Button>
           </div>
         </div>
         <Button onClick={() => dismiss(false)} className="rounded-full p-1 text-ink-300 hover:bg-surface-raised" aria-label={t('common.close')}>
           <X className="h-4 w-4" />
-        </button>
+        </Button>
       </div>
     </div>
   );

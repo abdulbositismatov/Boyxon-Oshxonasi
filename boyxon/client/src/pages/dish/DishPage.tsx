@@ -198,7 +198,7 @@ export default function DishPage() {
             >
               <ArrowLeft className="h-3.5 w-3.5 shrink-0" />
               {t('common.back')}
-            </button>
+            </Button>
           </div>
 
           <div className="overflow-hidden rounded-card border border-ink-line/60 bg-surface shadow-sm">

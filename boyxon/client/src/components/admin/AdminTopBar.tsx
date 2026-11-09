@@ -17,7 +17,7 @@ export function AdminTopBar({ title }: { title: string }) {
         >
           <ExternalLink className="h-4 w-4" />
           {t('admin.view_site')}
-        </button>
+        </Button>
         <span className="hidden text-sm text-ink-300 sm:block">{user?.email}</span>
       </div>
     </header>

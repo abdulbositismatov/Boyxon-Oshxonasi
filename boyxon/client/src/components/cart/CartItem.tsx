@@ -25,7 +25,7 @@ export function CartItem({ line, onQty, onRemove }: Props) {
           <p className="line-clamp-1 font-semibold text-ink-900">{line.name}</p>
           <Button onClick={() => onRemove(line.dishId)} className="text-ink-300 hover:text-danger" aria-label={t('cart.remove')}>
             <Trash2 className="h-4 w-4" />
-          </button>
+          </Button>
         </div>
         <p className="mt-0.5 text-sm font-bold text-primary-600">{formatPrice(line.price)}</p>
         <div className="mt-2 flex items-center gap-3">
@@ -36,7 +36,7 @@ export function CartItem({ line, onQty, onRemove }: Props) {
               aria-label={t('cart.decrease')}
             >
               <Minus className="h-4 w-4" />
-            </button>
+            </Button>
             <span className="w-6 text-center text-sm font-semibold select-none">{line.quantity}</span>
             <Button
               onClick={() => onQty(line.dishId, line.quantity + 1)}
@@ -44,7 +44,7 @@ export function CartItem({ line, onQty, onRemove }: Props) {
               aria-label={t('cart.increase')}
             >
               <Plus className="h-4 w-4" />
-            </button>
+            </Button>
           </div>
           <span className="text-sm font-bold text-ink-900">{formatPrice(line.price * line.quantity)}</span>
         </div>

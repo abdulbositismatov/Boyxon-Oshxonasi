@@ -89,7 +89,7 @@ export default function AdminChat() {
                     {c.lastMessage || '—'}
                   </p>
                 </div>
-              </button>
+              </Button>
             );
           })}
         </div>
@@ -110,7 +110,7 @@ export default function AdminChat() {
             <p className="mt-3 text-sm text-ink-300">{t('chat.select_conversation')}</p>
             <Button onClick={() => nav('/')} className="mt-4 text-sm font-medium text-primary-600">
               {t('chat.back_to_site')}
-            </button>
+            </Button>
           </div>
         )}
       </div>

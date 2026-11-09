@@ -28,7 +28,7 @@ export function DeliveryToggle({ value, onChange }: Props) {
         >
           <Icon className="h-4 w-4" />
           {t(k)}
-        </button>
+        </Button>
       ))}
     </div>
   );

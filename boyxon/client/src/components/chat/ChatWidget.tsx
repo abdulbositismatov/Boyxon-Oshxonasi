@@ -103,7 +103,7 @@ export function ChatWidget() {
           aria-label={t('chat.open')}
         >
           <MessageCircle className="h-6 w-6" />
-        </button>
+        </Button>
       )}
 
       {/* Zamonaviy animatsiyali Chatbar — butun ekran emas, qulay pastki panel (Bottom Sheet) */}
@@ -146,7 +146,7 @@ export function ChatWidget() {
                   aria-label={t('common.close')}
                 >
                   <X className="h-5 w-5" />
-                </button>
+                </Button>
               </div>
 
               {/* Xabarlar ro'yxati */}

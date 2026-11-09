@@ -119,7 +119,7 @@ export function AddressManager() {
               title={t('settings.address_set_default')}
             >
               <Star className="h-4 w-4" />
-            </button>
+            </Button>
           )}
           <Button
             onClick={() => {
@@ -131,7 +131,7 @@ export function AddressManager() {
             title={t('settings.address_delete')}
           >
             <Trash2 className="h-4 w-4" />
-          </button>
+          </Button>
         </Card>
       ))}
 

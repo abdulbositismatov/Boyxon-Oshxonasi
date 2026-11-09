@@ -70,7 +70,7 @@ export default function AdminCategories() {
               )}
             >
               {t(`admin.cat_filter_${f}`)}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
@@ -101,7 +101,7 @@ export default function AdminCategories() {
                 aria-label={t('common.edit')}
               >
                 <Pencil className="h-4 w-4" />
-              </button>
+              </Button>
               {c.isActive ? (
                 <Button
                   onClick={() => { if (confirm(t('admin.delete_confirm', { name: c.name }))) deleteM.mutate(c._id); }}
@@ -109,7 +109,7 @@ export default function AdminCategories() {
                   aria-label={t('common.delete')}
                 >
                   <Trash2 className="h-4 w-4" />
-                </button>
+                </Button>
               ) : (
                 <Button
                   onClick={() => restoreM.mutate(c._id)}
@@ -117,7 +117,7 @@ export default function AdminCategories() {
                   aria-label={t('admin.restore')}
                 >
                   <RotateCcw className="h-4 w-4" />
-                </button>
+                </Button>
               )}
             </div>
           </Card>
