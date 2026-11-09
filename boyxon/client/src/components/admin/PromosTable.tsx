@@ -47,9 +47,9 @@ export function PromosTable({ promos, loading, onDelete }: Props) {
               </td>
               <td className="px-4 py-3">
                 <div className="flex justify-end">
-                  <Button onClick={() => onDelete(p)} className="rounded-lg p-2 text-danger hover:bg-danger/10" aria-label={t('common.delete')}>
+                  <button type="button" onClick={() => onDelete(p)} className="rounded-lg p-2 text-danger hover:bg-danger/10" aria-label={t('common.delete')}>
                     <Trash2 className="h-4 w-4" />
-                  </Button>
+                  </button>
                 </div>
               </td>
             </tr>

@@ -54,7 +54,7 @@ export function CategoryChips({ categories, active, onChange }: Props) {
         const isActive = active === c.slug || (!active && !c.slug);
         const label = !c.slug ? t('category.all') : (localizedCategoryName(c, lang) || c.name);
         return (
-          <Button
+          <button type="button"
             key={c._id}
             onClick={() => onChange(c.slug || undefined)}
             className={cn(
@@ -67,7 +67,7 @@ export function CategoryChips({ categories, active, onChange }: Props) {
           >
             <Icon className={cn('h-4 w-4 transition-transform duration-200', isActive && 'scale-110')} />
             {label}
-          </Button>
+          </button>
         );
       })}
     </div>

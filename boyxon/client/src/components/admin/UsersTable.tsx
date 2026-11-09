@@ -51,12 +51,12 @@ export function UsersTable({ users, loading }: { users: User[]; loading?: boolea
               </td>
               <td className="px-4 py-3 text-ink-300">{formatDate(u.createdAt)}</td>
               <td className="px-4 py-3">
-                <Button
+                <button type="button"
                   onClick={() => blockM.mutate({ id: u._id, block: u.isActive })}
                   className={`rounded-full px-2.5 py-1 text-xs font-semibold ${u.isActive ? 'bg-success/10 text-success' : 'bg-danger/10 text-danger'}`}
                 >
                   {u.isActive ? t('common.active') : t('admin.blocked')}
-                </Button>
+                </button>
               </td>
             </tr>
           ))}

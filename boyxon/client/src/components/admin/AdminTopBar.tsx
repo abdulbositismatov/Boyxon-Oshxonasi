@@ -11,13 +11,13 @@ export function AdminTopBar({ title }: { title: string }) {
     <header className="sticky top-0 z-10 flex h-14 items-center justify-between border-b border-ink-line bg-surface px-4 md:px-6">
       <h1 className="font-display text-lg font-bold">{title}</h1>
       <div className="flex items-center gap-3">
-        <Button
+        <button type="button"
           onClick={() => nav('/')}
           className="flex items-center gap-1.5 text-sm font-medium text-ink-700 hover:text-primary-600"
         >
           <ExternalLink className="h-4 w-4" />
           {t('admin.view_site')}
-        </Button>
+        </button>
         <span className="hidden text-sm text-ink-300 sm:block">{user?.email}</span>
       </div>
     </header>

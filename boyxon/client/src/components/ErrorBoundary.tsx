@@ -67,12 +67,13 @@ export class ErrorBoundary extends Component<Props, State> {
           <div className="w-full max-w-sm rounded-card border border-ink-line/60 bg-surface p-6 text-center shadow-sm">
             <Loader2 className="mx-auto h-7 w-7 animate-spin text-accent" strokeWidth={2.5} />
             <p className="mt-4 text-sm font-medium text-ink-700">{t('common.loading')}</p>
-            <Button
+            <button
+              type="button"
               onClick={() => window.location.reload()}
               className="mt-4 text-sm font-semibold text-primary-600 hover:underline"
             >
               {t('errors.boundary_reload')}
-            </Button>
+            </button>
           </div>
         </div>
       );
@@ -86,12 +87,13 @@ export class ErrorBoundary extends Component<Props, State> {
           </div>
           <h1 className="mt-4 font-display text-xl font-bold text-ink-900">{t('common.error')}</h1>
           <p className="mt-2 text-sm text-ink-300">{t('errors.boundary_desc')}</p>
-          <Button
+          <button
+            type="button"
             onClick={() => window.location.reload()}
             className="mt-5 h-12 w-full rounded-full bg-gradient-to-r from-primary-500 to-[#F39C12] text-[15px] font-semibold text-white transition-opacity hover:opacity-90"
           >
             {t('errors.boundary_reload')}
-          </Button>
+          </button>
           <a
             href="/"
             className="mt-3 inline-block text-sm font-medium text-primary-600 hover:underline"

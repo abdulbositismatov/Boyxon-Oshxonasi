@@ -88,9 +88,9 @@ export function ChatThread({ conversationId, onBack }: { conversationId: string;
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="flex shrink-0 items-center gap-3 border-b border-ink-line px-4 py-3">
-        <Button onClick={onBack} className="rounded-full p-1.5 hover:bg-surface-raised md:hidden" aria-label={t('common.back')}>
+        <button type="button" onClick={onBack} className="rounded-full p-1.5 hover:bg-surface-raised md:hidden" aria-label={t('common.back')}>
           <ArrowLeft className="h-5 w-5" />
-        </Button>
+        </button>
         <UserAvatar src={user?.avatar} name={user?.name} className="h-10 w-10" viewable />
         <div className="min-w-0 flex-1">
           <p className="truncate font-semibold text-ink-900">{user?.name ?? t('chat.unknown_user')}</p>

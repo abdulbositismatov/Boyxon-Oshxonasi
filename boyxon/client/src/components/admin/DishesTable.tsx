@@ -54,9 +54,9 @@ export function DishesTable({ dishes, loading, onEdit, onToggle, onDelete }: Pro
               </td>
               <td className="px-4 py-3">
                 <div className="flex justify-end gap-1">
-                  <Button onClick={() => onEdit(d)} className="rounded-lg p-2 hover:bg-surface-raised" aria-label={t('common.edit')}><Pencil className="h-4 w-4" /></Button>
-                  <Button onClick={() => onToggle(d)} className="rounded-lg p-2 hover:bg-surface-raised" aria-label={t('admin.toggle')}><Power className="h-4 w-4" /></Button>
-                  <Button onClick={() => onDelete(d)} className="rounded-lg p-2 text-danger hover:bg-danger/10" aria-label={t('common.delete')}><Trash2 className="h-4 w-4" /></Button>
+                  <button type="button" onClick={() => onEdit(d)} className="rounded-lg p-2 hover:bg-surface-raised" aria-label={t('common.edit')}><Pencil className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => onToggle(d)} className="rounded-lg p-2 hover:bg-surface-raised" aria-label={t('admin.toggle')}><Power className="h-4 w-4" /></button>
+                  <button type="button" onClick={() => onDelete(d)} className="rounded-lg p-2 text-danger hover:bg-danger/10" aria-label={t('common.delete')}><Trash2 className="h-4 w-4" /></button>
                 </div>
               </td>
             </tr>

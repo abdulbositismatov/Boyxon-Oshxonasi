@@ -56,12 +56,12 @@ export function AdminSidebar() {
             </NavLink>
           ))}
         </nav>
-        <Button
+        <button type="button"
           onClick={doLogout}
           className="mt-auto rounded-xl px-3 py-2.5 text-left text-sm font-medium text-white/60 hover:bg-white/10"
         >
           {t('nav.logout')}
-        </Button>
+        </button>
       </aside>
 
       {/* Mobile nav */}
