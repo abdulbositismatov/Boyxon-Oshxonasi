@@ -206,7 +206,7 @@ export default function VerifyEmailPage() {
                     {t('auth.code_submit')}
                   </span>
                 )}
-            </button>
+              </Button>
             </form>
 
             <button
@@ -220,7 +220,7 @@ export default function VerifyEmailPage() {
                 : resending
                   ? t('common.loading')
                   : t('auth.verify_resend')}
-            </Button>
+            </button>
 
             <button
               type="button"

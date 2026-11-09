@@ -254,7 +254,7 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
               >
                 <Dices className={`h-4 w-4 text-primary-500 ${isSpinning ? 'animate-spin' : ''}`} />
                 <span>{t('home.random_spin')}</span>
-              </Button>
+              </button>
             </div>
           </div>
         )}
