@@ -206,7 +206,7 @@ export default function VerifyEmailPage() {
                     {t('auth.code_submit')}
                   </span>
                 )}
-              </Button>
+            </button>
             </form>
 
             <button
