@@ -141,7 +141,7 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
           <button
             type="button"
             onClick={scrollToMenu}
-            className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-primary-900 shadow-lg shadow-black/15 transition-all duration-150 hover:bg-amber-100 hover:scale-105 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
+            className="flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-700 to-primary-800 text-white px-5 py-2.5 text-sm font-bold shadow-lg shadow-black/15 transition-all duration-150 hover:brightness-110 hover:scale-105 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2"
           >
             <span>{t('home.hero_cta_menu')}</span>
             <ArrowDown className="h-4 w-4" />
