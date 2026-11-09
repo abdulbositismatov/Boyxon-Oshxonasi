@@ -184,9 +184,21 @@ export function CheckoutSheet() {
                 ))}
               </div>
             ) : (
-              <p className="rounded-2xl bg-primary-50 px-3 py-3 text-sm text-primary-800">
-                {t('cart.no_address')}
-              </p>
+              <div className="rounded-2xl border border-primary-500/30 bg-primary-50/60 p-3.5 text-sm dark:bg-primary-950/30">
+                <p className="font-medium text-primary-900 dark:text-primary-200">
+                  {t('cart.no_address')}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    set({ checkoutOpen: false });
+                    nav('/settings');
+                  }}
+                  className="mt-2.5 inline-flex items-center gap-1.5 rounded-full bg-primary-600 px-4 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-primary-700 active:scale-95"
+                >
+                  + {t('nav.addresses') || 'Manzil qo‘shish'}
+                </button>
+              </div>
             )}
           </div>
         )}
