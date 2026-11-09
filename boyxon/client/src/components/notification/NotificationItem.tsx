@@ -20,22 +20,25 @@ export function NotificationItem({
 }) {
   const Icon = icons[n.type] ?? Bell;
   return (
-    <Button
+    <button
+      type="button"
       onClick={onClick}
       className={cn(
-        'flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left hover:bg-surface-raised',
-        !n.isRead && 'bg-primary-50/60',
+        'flex w-full gap-3 rounded-2xl border p-3 text-left transition hover:bg-surface-raised',
+        n.isRead ? 'border-ink-line' : 'border-primary-200 bg-primary-50/60',
       )}
     >
-      <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-primary-100 text-primary-600">
-        <Icon className="h-5 w-5" />
+      <span className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-full bg-surface text-primary-600 shadow-sm">
+        <Icon className="h-4 w-4" />
       </span>
       <span className="min-w-0 flex-1">
-        <span className="block truncate text-sm font-semibold text-ink-900">{n.title}</span>
-        <span className="block text-sm text-ink-500">{n.message}</span>
-        <span className="mt-0.5 block text-xs text-ink-300">{formatDate(n.createdAt)}</span>
+        <span className="flex items-start justify-between gap-2">
+          <span className="font-semibold text-ink-900">{n.title}</span>
+          {!n.isRead && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary-500" />}
+        </span>
+        <span className="mt-0.5 block text-sm text-ink-500">{n.message}</span>
+        <span className="mt-1 block text-xs text-ink-300">{formatDate(n.createdAt)}</span>
       </span>
-      {!n.isRead && <span className="mt-2 h-2 w-2 shrink-0 rounded-full bg-primary-500" />}
-    </Button>
+    </button>
   );
 }
