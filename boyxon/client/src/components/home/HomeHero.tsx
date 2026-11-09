@@ -138,22 +138,24 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
 
         {/* Asosiy harakat tugmalari */}
         <div className="relative z-10 mt-5 flex flex-wrap items-center gap-3">
-          <Button
+          <button
+            type="button"
             onClick={scrollToMenu}
-            className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-primary-900 shadow-lg shadow-black/15 transition-all duration-150 hover:bg-amber-100 hover:scale-105 active:scale-95 touch-manipulation"
+            className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-primary-900 shadow-lg shadow-black/15 transition-all duration-150 hover:bg-amber-100 hover:scale-105 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
           >
             <span>{t('home.hero_cta_menu')}</span>
             <ArrowDown className="h-4 w-4" />
-          </Button>
+          </button>
 
           {dishes.length > 0 && (
-            <Button
+            <button
+              type="button"
               onClick={handleRandomPick}
-              className="flex items-center gap-2 rounded-full border border-amber-300/40 bg-white/15 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-150 hover:bg-white/25 active:scale-90 touch-manipulation shadow-sm"
+              className="flex items-center gap-2 rounded-full border border-amber-300/40 bg-white/15 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-150 hover:bg-white/25 active:scale-90 touch-manipulation shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             >
               <Dices className="h-4 w-4 text-amber-300 animate-spin-slow" />
               <span>{t('home.hero_cta_random')}</span>
-            </Button>
+            </button>
           )}
         </div>
 
@@ -161,30 +163,34 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
         <div className="relative z-10 mt-4 border-t border-white/15 pt-3">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
             <span className="text-white/70 shrink-0 font-medium">Tezkor tanlov:</span>
-            <Button
+            <button
+              type="button"
               onClick={() => handleShortcut('palovlar')}
-              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
+              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             >
               👑 Palovlar
-            </Button>
-            <Button
+            </button>
+            <button
+              type="button"
               onClick={() => handleShortcut('somsa')}
-              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
+              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             >
               🥟 Somsalar
-            </Button>
-            <Button
+            </button>
+            <button
+              type="button"
               onClick={() => handleShortcut('kaboblar')}
-              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
+              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             >
               🥩 Qozon kabob
-            </Button>
-            <Button
+            </button>
+            <button
+              type="button"
               onClick={() => handleShortcut('shorvalar')}
-              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
+              className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
             >
               🍲 Sho'rvalar
-            </Button>
+            </button>
           </div>
         </div>
       </div>
