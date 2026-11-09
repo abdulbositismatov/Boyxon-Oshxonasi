@@ -66,7 +66,8 @@ export default function AdminChat() {
           {conversations.map((c) => {
             const u = typeof c.user === 'object' ? c.user : null;
             return (
-              <Button
+              <button
+                type="button"
                 key={c._id}
                 onClick={() => setSelectedId(c._id)}
                 className={cn(
@@ -89,7 +90,7 @@ export default function AdminChat() {
                     {c.lastMessage || '—'}
                   </p>
                 </div>
-              </Button>
+              </button>
             );
           })}
         </div>
@@ -108,9 +109,9 @@ export default function AdminChat() {
           <div className="flex h-full flex-col items-center justify-center text-center">
             <MessageCircle className="h-12 w-12 text-ink-300" />
             <p className="mt-3 text-sm text-ink-300">{t('chat.select_conversation')}</p>
-            <Button onClick={() => nav('/')} className="mt-4 text-sm font-medium text-primary-600">
+            <button type="button" onClick={() => nav('/')} className="mt-4 text-sm font-medium text-primary-600">
               {t('chat.back_to_site')}
-            </Button>
+            </button>
           </div>
         )}
       </div>
