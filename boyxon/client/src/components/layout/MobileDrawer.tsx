@@ -52,12 +52,13 @@ export function MobileDrawer() {
             </nav>
             <div className="mt-auto">
               {accessToken ? (
-                <Button
+                <button
+                  type="button"
                   onClick={doLogout}
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-danger hover:bg-danger/10"
                 >
                   <LogOut className="h-5 w-5" />{t('auth.logout')}
-                </Button>
+                </button>
               ) : (
                 <Link to="/auth" onClick={close} className="block rounded-full bg-primary-700 py-3 text-center font-semibold text-white">
                   {t('auth.signin')}
