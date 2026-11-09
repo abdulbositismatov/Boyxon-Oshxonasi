@@ -31,7 +31,7 @@ export const useCartStore = create<CartState>()(
       add: (line, qty = 1) => {
         const lines = [...get().lines];
         const i = lines.findIndex((l) => l.dishId === line.dishId);
-        if (i === -1) lines.push({ ...line, quantity: qty });
+        if (i === -1) lines.push({ ...line, quantity: Math.min(20, Math.max(1, qty)) });
         else lines[i] = { ...lines[i], quantity: Math.min(20, lines[i].quantity + qty) };
         set({ lines });
       },

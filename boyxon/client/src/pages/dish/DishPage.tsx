@@ -148,6 +148,13 @@ export default function DishPage() {
     if (!dish) return;
     add({ dishId: dish._id, name: dish.name, price: dish.price, image: dish.image }, 1);
     toast.success(tVal(t('dish.added'), { name: localizedDishName(dish, langCode) }));
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(15);
+      } catch {
+        /* no-op */
+      }
+    }
   };
 
   return (
