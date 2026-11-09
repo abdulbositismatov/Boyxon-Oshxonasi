@@ -7,8 +7,8 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
   const sessionReady = useAuthStore((s) => s.sessionReady);
   const loc = useLocation();
   if (!sessionReady) {
-    return <div className="min-h-screen grid place-items-center text-ink-300">...</div>;
+    return <div className="min-h-screen grid place-items-center text-ink-300 font-medium">Yuklanmoqda...</div>;
   }
-  if (!token) return <Navigate to="/auth" replace state={{ from: loc.pathname }} />;
+  if (!token) return <Navigate to="/auth" replace state={{ from: loc.pathname + loc.search }} />;
   return <>{children}</>;
 }

@@ -34,7 +34,11 @@ const OrderDetailPage = lazy(() => import('../pages/order/OrderDetailPage'));
 const NotFoundPage = lazy(() => import('../pages/NotFoundPage'));
 
 function Fallback() {
-  return <div className="min-h-screen grid place-items-center text-ink-300">...</div>;
+  return (
+    <div className="min-h-screen grid place-items-center bg-bg">
+      <div className="h-9 w-9 animate-spin rounded-full border-3 border-primary-500 border-t-transparent" />
+    </div>
+  );
 }
 
 /** Shaxsiy sahifalar uchun noindex meta + sarlavha. */
