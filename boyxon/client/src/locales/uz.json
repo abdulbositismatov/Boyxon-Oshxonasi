@@ -200,7 +200,8 @@
   "auth.code_resent": "Yangi kod yuborildi",
   "auth.code_success": "Email tasdiqlandi!",
   "auth.code_already": "Email allaqachon tasdiqlangan — parolingiz bilan kiring",
-  "auth.code_not_delivered": "Kod yuborilmadi — \"Qayta yuborish\"ni bosing yoki birozdan keyin urinib ko'ring.",  "auth.reset_title": "Parolni tiklash",
+  "auth.code_not_delivered": "Kod yuborilmadi — \"Qayta yuborish\"ni bosing yoki birozdan keyin urinib ko'ring.",
+  "auth.reset_title": "Parolni tiklash",
   "auth.reset_subtitle": "Emailingizni kiriting — tiklash havolasini yuboramiz.",
   "auth.reset_send": "Havolani yuborish",
   "auth.reset_sent": "Agar email ro'yxatda bo'lsa, havola yuborildi. Pochtangizni tekshiring.",
@@ -571,5 +572,16 @@
   "kitchen.hint_open": "Oshxona ochiq — buyurtmalar qabul qilinmoqda",
   "kitchen.hint_closed": "Oshxona yopiq — hozircha buyurtma qabul qilinmaydi",
   "kitchen.updated": "Oshxona holati yangilandi",
-  "kitchen.update_error": "Oshxona holatini yangilab bo'lmadi"
+  "kitchen.update_error": "Oshxona holatini yangilab bo'lmadi",
+  "home.hero_badge": "👑 Boyxon Milliy Oshxonasi",
+  "home.hero_title": "O'choqdan tovoqqa — haqiqiy milliy lazzat!",
+  "home.hero_subtitle": "Maromida dam yegan palov, shira boy qozon kabob va tandirdan qaynoq somsalar — 30 daqiqada dasturxoningizda!",
+  "home.hero_feature_fast": "~30 daqiqa yetkazish",
+  "home.hero_feature_halal": "100% Halol & Toza",
+  "home.hero_feature_fresh": "O'choqdan qaynoq",
+  "home.hero_cta_menu": "Menyuni ko'rish",
+  "home.hero_cta_random": "🎲 Nima yesam ekan?",
+  "home.random_modal_title": "Bugungi mazali tanlovingiz!",
+  "home.random_spin": "Boshqa taom tanlash 🎲",
+  "home.random_order": "Savatga qo'shish"
 }

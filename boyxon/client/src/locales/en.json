@@ -572,5 +572,16 @@
   "kitchen.hint_open": "Kitchen is open — accepting orders",
   "kitchen.hint_closed": "Kitchen is closed — not accepting orders right now",
   "kitchen.updated": "Kitchen status updated",
-  "kitchen.update_error": "Could not update kitchen status"
+  "kitchen.update_error": "Could not update kitchen status",
+  "home.hero_badge": "👑 Boyxon National Kitchen",
+  "home.hero_title": "From Kazan to Table — Authentic Royal Taste!",
+  "home.hero_subtitle": "Perfect festive plov, juicy kazan kebab, and crispy tandoor samsa — delivered steaming hot to your door!",
+  "home.hero_feature_fast": "~30 min Fast Delivery",
+  "home.hero_feature_halal": "100% Halal & Fresh",
+  "home.hero_feature_fresh": "Fresh from Tandoor",
+  "home.hero_cta_menu": "Explore Menu",
+  "home.hero_cta_random": "🎲 What to eat today?",
+  "home.random_modal_title": "Your delicious pick for today!",
+  "home.random_spin": "Pick another dish 🎲",
+  "home.random_order": "Add to cart"
 }

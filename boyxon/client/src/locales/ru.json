@@ -572,5 +572,16 @@
   "kitchen.hint_open": "Кухня открыта — принимаем заказы",
   "kitchen.hint_closed": "Кухня закрыта — сейчас заказы не принимаются",
   "kitchen.updated": "Статус кухни обновлён",
-  "kitchen.update_error": "Не удалось обновить статус кухни"
+  "kitchen.update_error": "Не удалось обновить статус кухни",
+  "home.hero_badge": "👑 Национальная Кухня Boyxon",
+  "home.hero_title": "От очага к столу — истинный восточный вкус!",
+  "home.hero_subtitle": "Идеально выдержанный плов, сочный казан-кабоб и хрустящая тандырная самса — доставим горячими прямо к столу!",
+  "home.hero_feature_fast": "Доставка за ~30 минут",
+  "home.hero_feature_halal": "100% Халяль и чисто",
+  "home.hero_feature_fresh": "Свежее из тандыра",
+  "home.hero_cta_menu": "Смотреть меню",
+  "home.hero_cta_random": "🎲 Что выбрать сегодня?",
+  "home.random_modal_title": "Ваш аппетитный выбор на сегодня!",
+  "home.random_spin": "Выбрать другое 🎲",
+  "home.random_order": "Добавить в корзину"
 }
