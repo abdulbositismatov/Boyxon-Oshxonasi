@@ -73,7 +73,7 @@ services:
     name: boyxon-client
     plan: free
     rootDir: boyxon/client
-    buildCommand: npm install --include=dev && npm run build && rm -f dist/index.html
+    buildCommand: npm install --include=dev && npm run build && rm -f dist/index.html dist/sw.js
     staticPublishPath: ./dist
     autoDeployTrigger: commit
     # Build paytida API manzili — server domeniga ishora qilishi kerak
@@ -90,6 +90,10 @@ services:
       - type: redirect
         source: /*
         destination: https://boyxon-server.onrender.com/*
+      # `/index.html` yangi saytda 404 bo'lmasligi uchun ildizga.
+      - type: redirect
+        source: /index.html
+        destination: https://boyxon-server.onrender.com/
     # Xavfsizlik header'lari (Lighthouse Best Practices + real himoya).
     # script-src'dan 'unsafe-inline' olib tashlandi — theme script alohida
     # /theme-init.js fayliga chiqarib berildi. style-src 'unsafe-inline'
