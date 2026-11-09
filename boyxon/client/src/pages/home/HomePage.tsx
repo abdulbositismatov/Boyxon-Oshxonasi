@@ -10,6 +10,7 @@ import { DishGrid } from '../../components/dish/DishGrid';
 import { DishCard } from '../../components/dish/DishCard';
 import type { DishFilterValues } from '../../components/dish/DishFilterSheet';
 import { Seo } from '../../components/seo/Seo';
+import { HomeHero } from '../../components/home/HomeHero';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useCartStore } from '../../store/cart.store';
 import { DELIVERY_FEE, FREE_DELIVERY_FROM, QUERY_KEYS } from '../../lib/constants';
@@ -199,53 +200,13 @@ export default function HomePage() {
         </button>
       </div>
 
-      {/* Hero banner */}
-      <div className="shimmer-card mb-6 overflow-hidden rounded-card shadow-xl transition-all duration-300 hover:shadow-2xl animate-fade-in-up delay-150 relative">
-        {/* Animated gradient background */}
-        <div className="hero-gradient-animate bg-gradient-to-r from-primary-800 via-primary-600 to-primary-700 p-6 text-white">
-          {/* Decorative blobs */}
-          <div className="pointer-events-none absolute -right-8 -top-8 h-40 w-40 rounded-full bg-white/5 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-6 right-16 h-28 w-28 rounded-full bg-white/10 blur-xl" />
-          <div className="pointer-events-none absolute right-4 top-4 text-4xl opacity-20 animate-float">🍽️</div>
-
-          <p className="text-sm font-semibold text-white/90 animate-fade-in-up">{t('home.new_season')}</p>
-          <p className="font-display text-2xl font-extrabold animate-fade-in-up delay-75">{t('home.promo_title')}</p>
-          <p className="mt-1 text-sm text-white/85 animate-fade-in-up delay-100">{t('home.promo_code')}</p>
-          <div className="mt-4 animate-fade-in-up delay-150">
-            {cartSubtotal >= FREE_DELIVERY_FROM ? (
-              <p className="inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-2 text-sm font-semibold text-white backdrop-blur-sm">
-                <span>🎉</span>
-                {tVal(t('home.promo_unlocked'), { fee: formatPrice(DELIVERY_FEE) })}
-              </p>
-            ) : (
-              <>
-                <p className="text-sm font-semibold text-white">
-                  {tVal(t('home.promo_progress'), {
-                    amount: formatPrice(cartSubtotal === 0 ? FREE_DELIVERY_FROM : FREE_DELIVERY_FROM - cartSubtotal),
-                    fee: formatPrice(DELIVERY_FEE),
-                  })}
-                </p>
-                {cartSubtotal > 0 && (
-                  <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/25">
-                    <div
-                      className="h-full rounded-full bg-white transition-all duration-700 ease-out"
-                      style={{
-                        width: `${Math.min(100, Math.round((cartSubtotal / FREE_DELIVERY_FROM) * 100))}%`,
-                        animation: 'progress-fill 0.8s ease-out'
-                      }}
-                    />
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-      </div>
+      {/* Jozibali Boyxon Hero Banneri */}
+      <HomeHero dishes={data?.data || featured} onSelectCategory={setCat} />
 
       {belowFoldReady && (
         <>
       {/* Kategoriyalar */}
-      <div className="mb-6">
+      <div id="dishes-section" className="mb-6 scroll-mt-20">
         {cats ? (
           <CategoryChips categories={cats} active={category} onChange={setCat} />
         ) : catsLoading ? (
