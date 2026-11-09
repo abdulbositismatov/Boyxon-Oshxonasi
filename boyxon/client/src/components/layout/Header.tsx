@@ -43,9 +43,9 @@ export function Header() {
       scrolled ? 'shadow-md backdrop-blur-xl bg-cream/70 dark:bg-surface/80' : ''
     }`}>
       <div className={`mx-auto flex max-w-6xl items-center gap-2 px-4 transition-all duration-300 ${scrolled ? 'h-10' : 'h-12'}`}>
-        <Button className="rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" onClick={() => set({ mobileDrawer: true })} aria-label={t('nav.menu')}>
+        <button type="button" className="rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" onClick={() => set({ mobileDrawer: true })} aria-label={t('nav.menu')}>
           <Menu className="h-5 w-5" />
-        </Button>
+        </button>
         <Link to="/" className="font-display text-lg font-extrabold text-primary-600 tracking-tight transition-transform duration-200 hover:scale-105 active:scale-95">
           Boyxon
         </Link>
@@ -68,14 +68,14 @@ export function Header() {
         <div className="ml-auto flex items-center gap-2">
           {accessToken && (
             <>
-              <Button className="relative rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" onClick={() => set({ notifOpen: true })} aria-label={t('nav.notifications')}>
+              <button type="button" className="relative rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" onClick={() => set({ notifOpen: true })} aria-label={t('nav.notifications')}>
                 <Bell className="h-4 w-4 transition-transform duration-200 hover:rotate-12" />
                 {(data ?? 0) > 0 && (
                   <span className="absolute right-1 top-1 grid h-3 min-w-3 place-items-center rounded-full bg-danger px-1 text-[9px] font-bold text-white animate-pulse">
                     {(data ?? 0) > 99 ? '99+' : data}
                   </span>
                 )}
-              </Button>
+              </button>
             </>
           )}
           <span
