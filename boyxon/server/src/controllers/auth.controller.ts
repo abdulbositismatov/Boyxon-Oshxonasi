@@ -355,7 +355,7 @@ export const googleCallback = asyncHandler(async (req: Request, res: Response) =
   if (!userDoc.isActive) {
     return res.redirect(`${base}?error=blocked`);
   }
-  // TALAB: admin panel faqat admin@gmail.com + parol bilan kiradi — Google orqali emas.
+  // TALAB: admin panel faqat ADMIN_EMAIL + parol bilan kiradi — Google orqali emas.
   // Aks holda Google hisobi egasi parolisiz kira olardi.
   if (userDoc.role === 'admin') {
     return res.redirect(`${base}?error=admin_password_only`);
