@@ -39,7 +39,7 @@ export function MobileDrawer() {
           >
             <div className="flex items-center justify-between">
               <span className="font-display text-lg font-extrabold text-primary-600">Boyxon</span>
-              <Button onClick={close} className="rounded-full p-2 hover:bg-surface-raised" aria-label={t('common.close')}><X className="h-5 w-5" /></Button>
+              <button type="button" onClick={close} className="rounded-full p-2 hover:bg-surface-raised" aria-label={t('common.close')}><X className="h-5 w-5" /></button>
             </div>
             {user && <p className="mt-2 text-sm text-ink-300">{user.name}</p>}
             <nav className="mt-4 flex flex-col gap-1 text-[15px] font-medium">
