@@ -10,10 +10,14 @@ const PHONE_COPY = '+998939588458';
 
 /**
  * APK Workers Assets'ga sig'maydi (25 MiB limit) — alohida joyga (masalan R2)
- * qo'yiladi. `VITE_APK_URL` berilmasa lokal `/boyxon-mobile.apk` ishlatiladi.
+ * qo'yiladi va `VITE_APK_URL` orqali beriladi. Production'da URL berilmagan
+ * bo'lsa havola UMUMAN ko'rsatilmaydi (aks holda bosilganda 404 bo'lardi —
+ * Cloudflare Assets mavjud bo'lmagan fayl uchun JS 404 qaytaradi).
+ * Faqat lokal dev'da Vite middleware `/boyxon-mobile.apk`ni beradi.
  */
 const APK_URL =
-  (import.meta.env.VITE_APK_URL as string | undefined)?.trim() || '/boyxon-mobile.apk';
+  (import.meta.env.VITE_APK_URL as string | undefined)?.trim() ||
+  (import.meta.env.DEV ? '/boyxon-mobile.apk' : '');
 
 export function Footer() {
   const { t } = useTranslation();
@@ -98,15 +102,23 @@ export function Footer() {
 
           <div>
             <p className="font-semibold text-ink-700">{t('footer.download_app')}</p>
-            <a
-              href={APK_URL}
-              download
-              className="mt-2 flex items-center gap-2 rounded-xl border border-ink-line bg-bg px-3 py-2 font-semibold text-ink-700 transition hover:border-primary-500/50 hover:text-primary-600"
-            >
-              <Download className="h-4 w-4" aria-hidden="true" />
-              <span>{t('footer.download_app_desc')}</span>
-            </a>
-            <p className="mt-1 text-xs text-ink-300">APK • Android 7.0+</p>
+            {APK_URL ? (
+              <>
+                <a
+                  href={APK_URL}
+                  download
+                  className="mt-2 flex items-center gap-2 rounded-xl border border-ink-line bg-bg px-3 py-2 font-semibold text-ink-700 transition hover:border-primary-500/50 hover:text-primary-600"
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  <span>{t('footer.download_app_desc')}</span>
+                </a>
+                <p className="mt-1 text-xs text-ink-300">APK • Android 7.0+</p>
+              </>
+            ) : (
+              <p className="mt-2 rounded-xl border border-ink-line bg-bg px-3 py-2 text-xs text-ink-300">
+                {t('footer.download_app_soon')}
+              </p>
+            )}
           </div>
         </div>
 

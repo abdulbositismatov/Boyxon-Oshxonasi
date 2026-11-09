@@ -165,8 +165,7 @@ async function serveAsset(request: Request, url: URL): Promise<Response> {
 }
 
 export default {
-  async fetch(request: Request): Promise<Response> {
-    try {
+  async fetch(request: Request): Promise<Response> {    try {
       const url = new URL(request.url);
       if (url.pathname === '/ws') return await handleWebSocket(request);
       if (url.pathname.startsWith('/uploads/')) return await serveImage(url);
@@ -186,5 +185,23 @@ export default {
       console.error('Worker xatosi:', err);
       return errorResponse(request, 500, 'Server xatosi');
     }
+  },
+
+  /**
+   * Cron (har 2 daqiqa): Durable Object'ni va MongoDB ulanishini iliq tutadi.
+   *
+   * Cloudflare'da "uxlash" tushunchasi yo'q, lekin Durable Object uzoq vaqt
+   * so'rov olmasa xotiradan chiqariladi. Keyingi so'rovda u qaytadan ishga
+   * tushadi: dinamik import + Atlas'ga ulanish — foydalanuvchi buni 1–3 soniya
+   * kutish (yoki "server uyg'onmoqda" xabari) sifatida ko'radi.
+   */
+  async scheduled(_controller: ScheduledController, _env: unknown, ctx: ExecutionContext): Promise<void> {
+    ctx.waitUntil(
+      apiStub()
+        .fetch(new Request('https://boyxon.internal/health'))
+        .then((res) => res.text())
+        .then(() => undefined)
+        .catch(() => undefined),
+    );
   },
 };

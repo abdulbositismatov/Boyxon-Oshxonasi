@@ -14,7 +14,7 @@ import { toast } from 'sonner';
  */
 
 const NOTICE_ID = 'server-wake';
-const SHOW_AFTER_MS = 4000;
+const SHOW_AFTER_MS = 8000;
 const AUTO_DISMISS_MS = 10000;
 
 export function ServerWakeNotice(): null {

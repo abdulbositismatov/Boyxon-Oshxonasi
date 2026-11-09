@@ -61,7 +61,7 @@ export function BottomNav() {
                   if (chatOpen) set({ chatOpen: false });
                 }}
                 className={cn(
-                  'relative flex h-[42px] flex-1 flex-col items-center justify-center rounded-[20px] px-1 py-1 transition-all duration-200 active:scale-95',
+                  'relative flex h-[42px] flex-1 flex-col items-center justify-center rounded-[20px] px-1 py-1 transition-all duration-150 active:scale-90 select-none touch-manipulation',
                   isItemActive
                     ? 'font-bold text-primary-600 dark:text-primary-400'
                     : 'font-medium text-ink-300 hover:text-ink-500',
@@ -108,10 +108,10 @@ export function BottomNav() {
           aria-label={t('nav.chat') || 'Chat'}
           aria-expanded={chatOpen}
           className={cn(
-            'relative grid h-[56px] w-[56px] shrink-0 place-items-center rounded-full border shadow-2xl transition-all duration-200 active:scale-95',
+            'relative grid h-[56px] w-[56px] shrink-0 place-items-center rounded-full border shadow-2xl transition-all duration-150 active:scale-85 select-none touch-manipulation',
             chatOpen
               ? 'border-primary-400/70 bg-primary-700 text-white ring-4 ring-primary-500/25'
-              : 'border-white/15 bg-gradient-to-br from-primary-600 to-primary-800 text-white',
+              : 'border-white/15 bg-gradient-to-br from-primary-600 to-primary-800 text-white shadow-primary-600/30 animate-pulse-subtle',
           )}
         >
           <MessageCircle

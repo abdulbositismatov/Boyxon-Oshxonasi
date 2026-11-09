@@ -6,6 +6,7 @@ import { usersApi } from './api/users.api';
 import { authApi } from './api/auth.api';
 import { langFromPath } from './lib/seo';
 import { useTranslation } from 'react-i18next';
+import { MobileTouchFeedback } from './components/system/MobileTouchFeedback';
 
 export default function App() {
   useSocket();
@@ -77,5 +78,10 @@ export default function App() {
     }
   }, [user]);
 
-  return <AppRouter />;
+  return (
+    <>
+      <MobileTouchFeedback />
+      <AppRouter />
+    </>
+  );
 }

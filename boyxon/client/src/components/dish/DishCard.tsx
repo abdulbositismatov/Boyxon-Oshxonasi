@@ -21,6 +21,13 @@ export function DishCard({ dish }: { dish: Dish }) {
   const addToCart = (): void => {
     add({ dishId: dish._id, name: dish.name, price: dish.price, image: dish.image }, 1);
     toast.success(tVal(t('dish.added'), { name }));
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try {
+        navigator.vibrate(15);
+      } catch {
+        /* no-op */
+      }
+    }
   };
 
   return (
@@ -82,7 +89,7 @@ export function DishCard({ dish }: { dish: Dish }) {
           <button
             onClick={addToCart}
             aria-label={t('dish.add')}
-            className="ripple-container btn-glow grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-md transition-all duration-200 hover:scale-110 active:scale-90"
+            className="ripple-container btn-glow grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-md transition-all duration-150 hover:scale-110 active:scale-75 active:rotate-45 select-none touch-manipulation"
           >
             <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
           </button>

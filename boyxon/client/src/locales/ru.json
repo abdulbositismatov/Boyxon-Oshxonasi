@@ -559,7 +559,7 @@
   "seo.dish.related_title": "Другие блюда этой категории",
   "seo.breadcrumb_home": "Главная",
   "auth.google_connecting": "Подключение...",
-  "auth.server_waking": "Сервер просыпается, пожалуйста, подождите...",
+  "auth.server_waking": "Загружаем данные, подождите немного...",
   "auth.server_unavailable": "Не удалось подключиться к серверу. Попробуйте ещё раз.",
   "kitchen.open": "Открыто",
   "kitchen.closed": "Закрыто",

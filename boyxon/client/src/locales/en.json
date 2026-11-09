@@ -559,7 +559,7 @@
   "seo.dish.related_title": "More dishes in this category",
   "seo.breadcrumb_home": "Home",
   "auth.google_connecting": "Connecting...",
-  "auth.server_waking": "Waking up the server, please wait...",
+  "auth.server_waking": "Loading data, one moment...",
   "auth.server_unavailable": "Could not connect to the server. Please try again.",
   "kitchen.open": "Open",
   "kitchen.closed": "Closed",

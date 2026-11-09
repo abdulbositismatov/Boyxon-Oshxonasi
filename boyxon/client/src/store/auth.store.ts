@@ -93,14 +93,30 @@ export const useAuthStore = create<AuthState>()(
        */
       storage: {
         getItem: (name) => {
+          /**
+           * Buzilgan/yaroqsiz JSON (masalan quota tugab yarim yozilgan qiymat,
+           * eski format yoki foydalanuvchi qo'lda o'zgartirgani) butun ilovani
+           * oq ekranga aylantirardi — `JSON.parse` istisno tashlab, React
+           * render bo'lishidan oldin yiqilardi. Endi xato bo'lsa qiymat
+           * tozalanadi va sessiya oddiy "mehmon" holatidan boshlanadi.
+           */
+          const parse = (raw: string): never | null => {
+            try {
+              return JSON.parse(raw) as never;
+            } catch {
+              sessionStorage.removeItem(name);
+              localStorage.removeItem(name);
+              return null;
+            }
+          };
           const value = sessionStorage.getItem(name);
-          if (value) return JSON.parse(value) as never;
+          if (value) return parse(value);
           // Eski localStorage yozuvini bir marta ko'chirib olamiz (migratsiya).
           const legacy = localStorage.getItem(name);
           if (legacy) {
             sessionStorage.setItem(name, legacy);
             localStorage.removeItem(name);
-            return JSON.parse(legacy) as never;
+            return parse(legacy);
           }
           return null;
         },

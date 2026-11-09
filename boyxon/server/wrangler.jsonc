@@ -10,6 +10,11 @@
   "observability": {
     "enabled": true
   },
+  // Har 2 daqiqada `/health`ga "ping" — Durable Object va MongoDB ulanishi
+  // sovib qolmasin (cold start ~1–3 s vaqtida sayt "uxlab qolgan"dek ko'rinardi).
+  "triggers": {
+    "crons": ["*/2 * * * *"]
+  },
   "alias": {
     "iconv-lite": "./worker/iconv-lite-stub.ts",
     "mongoose": "./node_modules/mongoose/index.js"

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { Bell, ChevronDown, Globe, LogOut, MapPin, Moon, Package, Sun } from 'lucide-react';
+import { Bell, ChevronDown, Globe, LogOut, MapPin, Moon, Package, Phone, Sun } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { ProfileCard } from '../../components/settings/ProfileCard';
@@ -258,9 +258,14 @@ export default function SettingsPage() {
       </SettingsGroup>
 
       <div className="pb-4">
-        <Button variant="outline" className="w-full" onClick={() => toast.info(t('settings.help_contact'))}>
-          {t('settings.help')}
-        </Button>
+        <a
+          href="tel:+998939588458"
+          aria-label={t('settings.help_contact')}
+          className="flex w-full items-center justify-center gap-2 rounded-xl border border-ink-line bg-bg px-4 py-3 text-sm font-semibold text-ink-700 transition hover:border-primary-500/60 hover:text-primary-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+        >
+          <Phone className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>{t('settings.help_contact')}</span>
+        </a>
       </div>
     </div>
   );
