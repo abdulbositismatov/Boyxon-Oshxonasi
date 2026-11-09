@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowDown, Clock, Dices, Flame, ShieldCheck, Sparkles, Star, Utensils } from 'lucide-react';
+import { Clock, Dices, Flame, ShieldCheck, Sparkles, Star, Utensils } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 import type { Dish } from '../../types';
@@ -134,29 +134,6 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
             <Utensils className="h-3.5 w-3.5 text-orange-300" />
             <span>{t('home.hero_feature_fresh')}</span>
           </div>
-        </div>
-
-        {/* Asosiy harakat tugmalari */}
-        <div className="relative z-10 mt-5 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            onClick={scrollToMenu}
-            className="flex items-center gap-2 rounded-full bg-gradient-to-r from-primary-700 to-primary-800 text-white px-5 py-2.5 text-sm font-bold shadow-lg shadow-black/15 transition-all duration-150 hover:brightness-110 hover:scale-105 active:scale-95 touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 focus-visible:ring-offset-2"
-          >
-            <span>{t('home.hero_cta_menu')}</span>
-            <ArrowDown className="h-4 w-4" />
-          </button>
-
-          {dishes.length > 0 && (
-            <button
-              type="button"
-              onClick={handleRandomPick}
-              className="flex items-center gap-2 rounded-full border border-amber-300/40 bg-white/15 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-150 hover:bg-white/25 active:scale-90 touch-manipulation shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300"
-            >
-              <Dices className="h-4 w-4 text-amber-300 animate-spin-slow" />
-              <span>{t('home.hero_cta_random')}</span>
-            </button>
-          )}
         </div>
 
         {/* Tezkor ishtahani ochuvchi taom kategoriyalari */}
