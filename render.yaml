@@ -62,15 +62,18 @@ services:
       # CLOUDINARY_* (ixtiyoriy)
 
   # ---------------------------------------------------------
-  # LEGACY: alohida statik frontend (ixtiyoriy zaxira).
-  # Yangi arxitektura — frontend `boyxon-server` servisidan beriladi.
-  # Tekshiruvdan keyin bu servisni Render Dashboard'dan o'chirish mumkin.
+  # LEGACY: alohida statik frontend — endi sof REDIRECTOR.
+  # Frontend `boyxon-server` servisidan beriladi (bitta origin).
+  # Eski havolalar buzilmasligi uchun barcha so'rovlar yangi saytga
+  # 301 bilan o'tadi. `index.html` build'dan keyin o'chiriladi — aks
+  # holda Render mavjud faylni route'dan ustun qo'yib, `/` eski SPA'ni
+  # ko'rsatib yuboradi.
   # ---------------------------------------------------------
   - type: static_site
     name: boyxon-client
     plan: free
     rootDir: boyxon/client
-    buildCommand: npm install && npm run build
+    buildCommand: npm install --include=dev && npm run build && rm -f dist/index.html
     staticPublishPath: ./dist
     autoDeployTrigger: commit
     # Build paytida API manzili — server domeniga ishora qilishi kerak
@@ -82,10 +85,11 @@ services:
       - key: VITE_VAPID_PUBLIC_KEY
         sync: false
     routes:
-      # SPA: barcha yo'nalishlar index.html'ga (React Router ishlashi uchun)
-      - type: rewrite
+      # Barcha yo'llar yangi (bitta origin) saytga 301.
+      # Render'da splat belgisi — `*` (`:splat` emas).
+      - type: redirect
         source: /*
-        destination: /index.html
+        destination: https://boyxon-server.onrender.com/*
     # Xavfsizlik header'lari (Lighthouse Best Practices + real himoya).
     # script-src'dan 'unsafe-inline' olib tashlandi — theme script alohida
     # /theme-init.js fayliga chiqarib berildi. style-src 'unsafe-inline'
