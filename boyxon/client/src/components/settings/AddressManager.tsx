@@ -111,7 +111,7 @@ export function AddressManager() {
             <p className="truncate text-xs text-ink-300">{a.address}</p>
           </div>
           {!a.isDefault && (
-            <button
+            <Button
               onClick={() => a._id && defaultM.mutate(a._id)}
               disabled={defaultM.isPending}
               className="grid h-8 w-8 shrink-0 place-items-center rounded-lg text-ink-300 hover:bg-surface-raised hover:text-fg-muted"
@@ -121,7 +121,7 @@ export function AddressManager() {
               <Star className="h-4 w-4" />
             </button>
           )}
-          <button
+          <Button
             onClick={() => {
               if (a._id && window.confirm(t('settings.address_delete_confirm'))) deleteM.mutate(a._id);
             }}

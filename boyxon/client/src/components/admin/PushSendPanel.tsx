@@ -52,7 +52,7 @@ export function PushSendPanel() {
         <label className="mb-1 block text-xs font-semibold text-ink-700">{t('admin.push_audience')}</label>
         <div className="flex gap-2">
           {AUDIENCES.map((a) => (
-            <button
+            <Button
               key={a.v}
               onClick={() => setAudience(a.v)}
               className={`rounded-full border px-3 py-1.5 text-sm ${audience === a.v ? 'border-primary-500 bg-primary-50 text-primary-800' : 'border-ink-line'}`}

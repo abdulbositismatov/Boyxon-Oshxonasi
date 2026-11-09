@@ -78,6 +78,11 @@
     touch-action: manipulation;
   }
 
+  :where(button, a, [role="button"], input, select, textarea):focus-visible {
+    outline: 2px solid rgb(var(--accent));
+    outline-offset: 2px;
+  }
+
   /* Universal silliq interaktiv tebranishlar */
   button, a, [role="button"] {
     transition: color 0.2s cubic-bezier(0.16, 1, 0.3, 1),

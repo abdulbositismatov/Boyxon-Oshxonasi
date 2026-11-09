@@ -16,7 +16,7 @@ export function DeliveryToggle({ value, onChange }: Props) {
   return (
     <div className="grid grid-cols-2 gap-2 rounded-2xl bg-muted p-1">
       {opts.map(({ v, k, Icon }) => (
-        <button
+        <Button
           key={v}
           onClick={() => onChange(v)}
           className={cn(

@@ -39,7 +39,7 @@ export function MobileDrawer() {
           >
             <div className="flex items-center justify-between">
               <span className="font-display text-lg font-extrabold text-primary-600">Boyxon</span>
-              <button onClick={close} className="rounded-full p-2 hover:bg-surface-raised" aria-label={t('common.close')}><X className="h-5 w-5" /></button>
+              <Button onClick={close} className="rounded-full p-2 hover:bg-surface-raised" aria-label={t('common.close')}><X className="h-5 w-5" /></button>
             </div>
             {user && <p className="mt-2 text-sm text-ink-300">{user.name}</p>}
             <nav className="mt-4 flex flex-col gap-1 text-[15px] font-medium">
@@ -52,7 +52,7 @@ export function MobileDrawer() {
             </nav>
             <div className="mt-auto">
               {accessToken ? (
-                <button
+                <Button
                   onClick={doLogout}
                   className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-danger hover:bg-danger/10"
                 >

@@ -65,7 +65,7 @@ export function DishFilterSheet({ open, onClose, value, onApply }: Props) {
           <p className="mb-2 text-sm font-semibold text-ink-700">{t('filter.rating')}</p>
           <div className="flex flex-wrap gap-2">
             {[0, 4, 4.5, 4.7].map((r) => (
-              <button
+              <Button
                 key={r}
                 onClick={() => setDraft({ ...draft, rating: r === 0 ? undefined : r })}
                 className={`rounded-full border px-3 py-1.5 text-sm ${draft.rating === r || (r === 0 && !draft.rating) ? 'border-primary-500 bg-primary-50 text-primary-800' : 'border-ink-line'}`}
@@ -82,7 +82,7 @@ export function DishFilterSheet({ open, onClose, value, onApply }: Props) {
             {TAGS.map((tag) => {
               const on = draft.tags?.split(',').includes(tag.v);
               return (
-                <button
+                <Button
                   key={tag.v}
                   onClick={() => {
                     const cur = new Set((draft.tags ?? '').split(',').filter(Boolean));
@@ -102,7 +102,7 @@ export function DishFilterSheet({ open, onClose, value, onApply }: Props) {
           <p className="mb-2 text-sm font-semibold text-ink-700">{t('filter.sort')}</p>
           <div className="flex flex-wrap gap-2">
             {SORTS.map((s) => (
-              <button
+              <Button
                 key={s.v}
                 onClick={() => setDraft({ ...draft, sort: s.v })}
                 className={`rounded-full border px-3 py-1.5 text-sm ${draft.sort === s.v ? 'border-primary-500 bg-primary-50 text-primary-800' : 'border-ink-line'}`}

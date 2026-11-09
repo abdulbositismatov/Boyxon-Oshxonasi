@@ -138,7 +138,7 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
 
         {/* Asosiy harakat tugmalari */}
         <div className="relative z-10 mt-5 flex flex-wrap items-center gap-3">
-          <button
+          <Button
             onClick={scrollToMenu}
             className="flex items-center gap-2 rounded-full bg-white px-5 py-2.5 text-sm font-bold text-primary-900 shadow-lg shadow-black/15 transition-all duration-150 hover:bg-amber-100 hover:scale-105 active:scale-95 touch-manipulation"
           >
@@ -147,7 +147,7 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
           </button>
 
           {dishes.length > 0 && (
-            <button
+            <Button
               onClick={handleRandomPick}
               className="flex items-center gap-2 rounded-full border border-amber-300/40 bg-white/15 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur-md transition-all duration-150 hover:bg-white/25 active:scale-90 touch-manipulation shadow-sm"
             >
@@ -161,25 +161,25 @@ export function HomeHero({ dishes = [], onSelectCategory }: Props) {
         <div className="relative z-10 mt-4 border-t border-white/15 pt-3">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar text-xs">
             <span className="text-white/70 shrink-0 font-medium">Tezkor tanlov:</span>
-            <button
+            <Button
               onClick={() => handleShortcut('palovlar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               👑 Palovlar
             </button>
-            <button
+            <Button
               onClick={() => handleShortcut('somsa')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🥟 Somsalar
             </button>
-            <button
+            <Button
               onClick={() => handleShortcut('kaboblar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >
               🥩 Qozon kabob
             </button>
-            <button
+            <Button
               onClick={() => handleShortcut('shorvalar')}
               className="shrink-0 rounded-full bg-black/20 hover:bg-black/35 px-2.5 py-1 text-amber-200 border border-white/10 transition active:scale-90"
             >

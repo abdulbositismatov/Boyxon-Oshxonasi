@@ -87,9 +87,10 @@ export function DishCard({ dish }: { dish: Dish }) {
             ) : null}
           </div>
           <button
+            type="button"
             onClick={addToCart}
             aria-label={t('dish.add')}
-            className="ripple-container btn-glow grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-md transition-all duration-150 hover:scale-110 active:scale-75 active:rotate-45 select-none touch-manipulation"
+            className="ripple-container btn-glow grid h-10 w-10 shrink-0 place-items-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-white shadow-md transition-all duration-150 hover:scale-110 active:scale-75 active:rotate-45 select-none touch-manipulation focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2"
           >
             <Plus className="h-5 w-5 transition-transform duration-300 group-hover:rotate-90" />
           </button>

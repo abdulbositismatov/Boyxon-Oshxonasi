@@ -211,7 +211,7 @@ export default function SettingsPage() {
           right={
             <div className="flex gap-1">
               {LANGS.map((l) => (
-                <button
+                <Button
                   key={l.v}
                   onClick={() => void setLang(l.v)}
                   className={`rounded-full px-2.5 py-1 text-xs font-semibold ${i18n.language === l.v ? 'bg-primary-700 text-white' : 'bg-surface-raised text-ink-700'}`}

@@ -65,9 +65,10 @@ export function PromoInput() {
           />
         </div>
         <button
+          type="button"
           onClick={() => void apply()}
           disabled={loading}
-          className="h-12 rounded-2xl bg-accent px-5 text-sm font-semibold text-white hover:bg-accent-hover disabled:opacity-50"
+          className="h-12 rounded-2xl bg-accent px-5 text-sm font-semibold text-white hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
         >
           {loading ? '...' : t('cart.promo_apply')}
         </button>

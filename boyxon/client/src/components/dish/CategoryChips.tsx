@@ -54,7 +54,7 @@ export function CategoryChips({ categories, active, onChange }: Props) {
         const isActive = active === c.slug || (!active && !c.slug);
         const label = !c.slug ? t('category.all') : (localizedCategoryName(c, lang) || c.name);
         return (
-          <button
+          <Button
             key={c._id}
             onClick={() => onChange(c.slug || undefined)}
             className={cn(

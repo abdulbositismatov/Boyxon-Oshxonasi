@@ -164,9 +164,10 @@ export function CheckoutSheet() {
               <div className="flex flex-col gap-2">
                 {addresses.map((a) => (
                   <button
+                    type="button"
                     key={addrKey(a)}
                     onClick={() => setAddressId(a._id ?? '')}
-                    className={`rounded-2xl border px-3 py-3 text-left text-sm ${
+                    className={`rounded-2xl border px-3 py-3 text-left text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${
                       addressId === a._id
                         ? 'border-primary-500 bg-primary-50 text-primary-800'
                         : 'border-ink-line'

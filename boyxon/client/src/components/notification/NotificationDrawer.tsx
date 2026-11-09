@@ -37,7 +37,7 @@ export function NotificationDrawer() {
   return (
     <Sheet open={notifOpen} onClose={() => set({ notifOpen: false })} title={t('notifications.title')}>
       {!!data?.data.length && (
-        <button onClick={markAll} className="mb-2 text-sm font-medium text-primary-600">
+        <Button onClick={markAll} className="mb-2 text-sm font-medium text-primary-600">
           {t('notifications.mark_all_read')}
         </button>
       )}

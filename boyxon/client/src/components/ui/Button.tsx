@@ -6,11 +6,18 @@ interface Props extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: 'sm' | 'md' | 'lg';
 }
 
-export function Button({ variant = 'primary', size = 'md', className, ...rest }: Props) {
+export function Button({
+  variant = 'primary',
+  size = 'md',
+  className,
+  type = 'button',
+  ...rest
+}: Props) {
   return (
     <button
+      type={type}
       className={cn(
-        'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-150 active:scale-[0.95] select-none touch-manipulation disabled:opacity-50',
+        'inline-flex items-center justify-center gap-2 rounded-full font-semibold transition-all duration-150 active:scale-[0.95] select-none touch-manipulation disabled:cursor-not-allowed disabled:opacity-50',
         size === 'sm' && 'h-9 px-4 text-sm',
         size === 'md' && 'h-12 px-6 text-[15px]',
         size === 'lg' && 'h-[52px] px-8 text-base',

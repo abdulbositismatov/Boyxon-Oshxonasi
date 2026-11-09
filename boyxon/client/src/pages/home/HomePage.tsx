@@ -191,7 +191,7 @@ export default function HomePage() {
             className="h-12 w-full rounded-full border border-ink-line bg-surface pl-11 pr-4 text-[15px] outline-none transition-all duration-300 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/15 focus:shadow-sm"
           />
         </div>
-        <button
+        <Button
           onClick={() => setFilterOpen(true)}
           className="grid h-12 w-12 shrink-0 place-items-center rounded-full border border-ink-line bg-surface text-ink-700 transition-all duration-300 hover:border-primary-500/50 hover:bg-surface-raised active:scale-90 hover:rotate-6"
           aria-label={t('filter.title')}
@@ -243,7 +243,7 @@ export default function HomePage() {
         {isError ? (
           <div className="rounded-card bg-danger/10 p-6 text-center">
             <p className="text-sm text-danger">{t('home.load_error')}</p>
-            <button onClick={() => void refetch()} className="mt-2 text-sm font-semibold text-primary-600">
+            <Button onClick={() => void refetch()} className="mt-2 text-sm font-semibold text-primary-600">
               {t('common.retry')}
             </button>
           </div>
@@ -253,7 +253,7 @@ export default function HomePage() {
 
         {pages > 1 && (
           <div className="mt-6 flex items-center justify-center gap-2">
-            <button
+            <Button
               disabled={page <= 1}
               onClick={() => setPage((p) => p - 1)}
               className="h-10 rounded-full border border-ink-line px-4 text-sm disabled:opacity-40"
@@ -261,7 +261,7 @@ export default function HomePage() {
               ← {t('common.prev')}
             </button>
             <span className="px-2 text-sm text-ink-300">{page} / {pages}</span>
-            <button
+            <Button
               disabled={page >= pages}
               onClick={() => setPage((p) => p + 1)}
               className="h-10 rounded-full border border-ink-line px-4 text-sm disabled:opacity-40"

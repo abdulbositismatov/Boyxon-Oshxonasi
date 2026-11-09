@@ -43,7 +43,7 @@ export function Header() {
       scrolled ? 'shadow-md backdrop-blur-xl bg-cream/70 dark:bg-surface/80' : ''
     }`}>
       <div className={`mx-auto flex max-w-6xl items-center gap-2 px-4 transition-all duration-300 ${scrolled ? 'h-10' : 'h-12'}`}>
-        <button className="rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform md:hidden" onClick={() => set({ mobileDrawer: true })} aria-label={t('nav.menu')}>
+        <Button className="rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform md:hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" onClick={() => set({ mobileDrawer: true })} aria-label={t('nav.menu')}>
           <Menu className="h-5 w-5" />
         </button>
         <Link to="/" className="font-display text-lg font-extrabold text-primary-600 tracking-tight transition-transform duration-200 hover:scale-105 active:scale-95">
@@ -53,21 +53,22 @@ export function Header() {
           <Link to="/" className="transition-colors hover:text-primary-600">{t('nav.menu')}</Link>
           <Link to="/cart" className="transition-colors hover:text-primary-600">{t('nav.cart')}</Link>
           {user?.role === 'admin' && <Link to="/admin" className="transition-colors hover:text-primary-600">{t('nav.admin')}</Link>}
-          {accessToken && (
-            <button
-              onClick={() => set({ chatOpen: true })}
-              className="flex items-center gap-1 rounded-full border border-ink-line px-2.5 py-0.5 text-xs font-medium transition-all hover:border-primary-500/50 hover:text-primary-600 hover:bg-surface-raised active:scale-95"
-              aria-label="Chat"
-            >
-              <MessageCircle className="h-3.5 w-3.5" />
-              Chat
-            </button>
-          )}
+            {accessToken && (
+              <button
+                type="button"
+                onClick={() => set({ chatOpen: true })}
+                className="flex items-center gap-1 rounded-full border border-ink-line px-2.5 py-0.5 text-xs font-medium transition-all hover:border-primary-500/50 hover:text-primary-600 hover:bg-surface-raised active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500"
+                aria-label="Chat"
+              >
+                <MessageCircle className="h-3.5 w-3.5" />
+                Chat
+              </button>
+            )}
         </nav>
         <div className="ml-auto flex items-center gap-2">
           {accessToken && (
             <>
-              <button className="relative rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform" onClick={() => set({ notifOpen: true })} aria-label={t('nav.notifications')}>
+              <Button className="relative rounded-full p-2 hover:bg-surface-raised active:scale-90 transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" onClick={() => set({ notifOpen: true })} aria-label={t('nav.notifications')}>
                 <Bell className="h-4 w-4 transition-transform duration-200 hover:rotate-12" />
                 {(data ?? 0) > 0 && (
                   <span className="absolute right-1 top-1 grid h-3 min-w-3 place-items-center rounded-full bg-danger px-1 text-[9px] font-bold text-white animate-pulse">
@@ -100,7 +101,8 @@ export function Header() {
             {kitchenOpen === undefined ? '…' : kitchenOpen ? t('kitchen.open') : t('kitchen.closed')}
           </span>
           <button
-            className={`rounded-full hover:bg-surface-raised transition-transform duration-200 hover:scale-105 active:scale-90 ${user?.avatar ? 'p-1' : 'p-2'}`}
+            type="button"
+            className={`rounded-full hover:bg-surface-raised transition-transform duration-200 hover:scale-105 active:scale-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 ${user?.avatar ? 'p-1' : 'p-2'}`}
             onClick={() => nav(accessToken ? '/settings' : '/auth')}
             aria-label={t('nav.profile')}
           >

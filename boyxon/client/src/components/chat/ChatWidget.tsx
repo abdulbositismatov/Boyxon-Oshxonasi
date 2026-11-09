@@ -97,7 +97,7 @@ export function ChatWidget() {
     <>
       {/* Desktop uchun burchakdagi floating tugma (mobilda bottom nav'da joylashgan) */}
       {!open && (
-        <button
+        <Button
           onClick={() => setOpen(true)}
           className="fixed right-5 z-40 hidden md:grid h-12 w-12 place-items-center rounded-full bg-gradient-to-r from-primary-700 to-primary-800 text-white shadow-lg transition hover:scale-105 active:scale-95 md:bottom-5"
           aria-label={t('chat.open')}
@@ -140,7 +140,7 @@ export function ChatWidget() {
                     {t('chat.online')}
                   </p>
                 </div>
-                <button
+                <Button
                   onClick={() => setOpen(false)}
                   className="rounded-full p-2 transition-colors hover:bg-white/20 active:scale-90"
                   aria-label={t('common.close')}

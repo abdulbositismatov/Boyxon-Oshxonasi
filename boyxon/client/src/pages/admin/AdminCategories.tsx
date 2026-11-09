@@ -61,7 +61,7 @@ export default function AdminCategories() {
         </Button>
         <div className="flex gap-1.5">
           {FILTERS.map((f) => (
-            <button
+            <Button
               key={f}
               onClick={() => setFilter(f)}
               className={cn(
@@ -95,7 +95,7 @@ export default function AdminCategories() {
               <p className="text-xs text-ink-300">/{c.slug} · {c.order}</p>
             </div>
             <div className="flex gap-1">
-              <button
+              <Button
                 onClick={() => { setEditing(c); setForm({ name: c.name, slug: c.slug, icon: c.icon ?? '', order: String(c.order) }); setOpen(true); }}
                 className="rounded-lg p-2 hover:bg-surface-raised"
                 aria-label={t('common.edit')}
@@ -103,7 +103,7 @@ export default function AdminCategories() {
                 <Pencil className="h-4 w-4" />
               </button>
               {c.isActive ? (
-                <button
+                <Button
                   onClick={() => { if (confirm(t('admin.delete_confirm', { name: c.name }))) deleteM.mutate(c._id); }}
                   className="rounded-lg p-2 text-danger hover:bg-danger/10"
                   aria-label={t('common.delete')}
@@ -111,7 +111,7 @@ export default function AdminCategories() {
                   <Trash2 className="h-4 w-4" />
                 </button>
               ) : (
-                <button
+                <Button
                   onClick={() => restoreM.mutate(c._id)}
                   className="rounded-lg p-2 text-success hover:bg-success/10"
                   aria-label={t('admin.restore')}

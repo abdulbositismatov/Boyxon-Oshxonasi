@@ -20,7 +20,7 @@ export function NotificationItem({
 }) {
   const Icon = icons[n.type] ?? Bell;
   return (
-    <button
+    <Button
       onClick={onClick}
       className={cn(
         'flex w-full items-start gap-3 rounded-xl px-3 py-3 text-left hover:bg-surface-raised',

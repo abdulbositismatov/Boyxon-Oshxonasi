@@ -27,7 +27,7 @@ export default function AdminOrders() {
     <div className="space-y-4">
       <div className="no-scrollbar flex gap-2 overflow-x-auto">
         {FILTERS.map((f) => (
-          <button
+          <Button
             key={f.v}
             onClick={() => setStatus(f.v)}
             className={`shrink-0 rounded-full border px-3.5 py-1.5 text-sm font-medium ${

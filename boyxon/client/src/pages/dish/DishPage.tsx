@@ -192,7 +192,7 @@ export default function DishPage() {
       ) : (
         <div className="mx-auto max-w-3xl space-y-5 px-4 py-5">
           <div className="flex items-center gap-2 text-xs text-ink-300 mb-4">
-            <button
+            <Button
               onClick={() => navigate(-1)}
               className="flex items-center gap-2 hover:text-primary-600 transition"
             >

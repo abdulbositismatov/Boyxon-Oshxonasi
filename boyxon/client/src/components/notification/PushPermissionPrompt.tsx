@@ -36,7 +36,7 @@ export function PushPermissionPrompt() {
           <p className="font-semibold text-ink-900">{t('notifications.prompt_title')}</p>
           <p className="mt-0.5 text-sm text-ink-500">{t('notifications.prompt_desc')}</p>
           <div className="mt-3 flex gap-2">
-            <button
+            <Button
               onClick={async () => {
                 const ok = await subscribe();
                 dismiss(ok);
@@ -45,7 +45,7 @@ export function PushPermissionPrompt() {
             >
               {t('notifications.allow')}
             </button>
-            <button
+            <Button
               onClick={() => dismiss(false)}
               className="h-9 rounded-full border border-ink-line px-4 text-sm font-medium text-ink-700"
             >
@@ -53,7 +53,7 @@ export function PushPermissionPrompt() {
             </button>
           </div>
         </div>
-        <button onClick={() => dismiss(false)} className="rounded-full p-1 text-ink-300 hover:bg-surface-raised" aria-label={t('common.close')}>
+        <Button onClick={() => dismiss(false)} className="rounded-full p-1 text-ink-300 hover:bg-surface-raised" aria-label={t('common.close')}>
           <X className="h-4 w-4" />
         </button>
       </div>
