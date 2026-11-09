@@ -363,7 +363,7 @@ function AuthForm({ onDone }: { onDone: (token: string, u: User) => void }) {
               className="w-full pt-1 text-center text-xs font-medium text-primary-600 hover:underline active:scale-95 transition"
             >
               {t('auth.forgot')}
-            </Button>
+            </button>
           </motion.form>
         ) : (
           <motion.form
