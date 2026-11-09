@@ -16,10 +16,10 @@ export function VerifiedRoute({ children }: { children: ReactNode }) {
   const loc = useLocation();
 
   if (!sessionReady) return <>{children}</>;
-  if (!accessToken) return <Navigate to="/auth" replace state={{ from: loc.pathname }} />;
+  if (!accessToken) return <Navigate to="/auth" replace state={{ from: loc.pathname + loc.search }} />;
   // User hali yuklanmagan bo'lsa (refresh jarayoni) — kutamiz, sakrab ketmaymiz.
   if (user && user.emailVerified === false) {
-    return <Navigate to={`/verify-email?email=${encodeURIComponent(user.email)}`} replace />;
+    return <Navigate to={`/verify-email?email=${encodeURIComponent(user.email)}`} replace state={{ from: loc.pathname + loc.search }} />;
   }
   return <>{children}</>;
 }

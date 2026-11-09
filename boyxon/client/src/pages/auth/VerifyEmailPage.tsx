@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams, useLocation } from 'react-router-dom';
 import { CheckCircle2, Loader2, MailCheck, ShieldCheck, XCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -27,6 +27,7 @@ const CODE_LENGTH = 6;
 export default function VerifyEmailPage() {
   const { t } = useTranslation();
   const nav = useNavigate();
+  const loc = useLocation();
   const { token } = useParams<{ token?: string }>();
   const [params] = useSearchParams();
   const user = useAuthStore((s) => s.user);
@@ -34,6 +35,7 @@ export default function VerifyEmailPage() {
   const setToken = useAuthStore((s) => s.setToken);
   const setSessionReady = useAuthStore((s) => s.setSessionReady);
 
+  const from = (loc.state as { from?: string } | null)?.from ?? params.get('from') ?? '/';
   const email = user?.email ?? params.get('email') ?? '';
 
   const [mode, setMode] = useState<Mode>(token ? 'checking' : 'code');
@@ -82,7 +84,7 @@ export default function VerifyEmailPage() {
     setUser(u);
     setSessionReady(true);
     toast.success(t('auth.code_success'));
-    nav(u.role === 'admin' ? '/admin' : '/', { replace: true });
+    nav(u.role === 'admin' ? '/admin' : from, { replace: true });
   };
 
   const submit = async (value = code): Promise<void> => {
