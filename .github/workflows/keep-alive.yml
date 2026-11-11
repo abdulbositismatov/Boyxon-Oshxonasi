@@ -1,26 +1,22 @@
 # =============================================================================
-# Render free-tier keep-alive
+# Render free-tier keep-alive (ZAXIRA)
 #
-# Render bepul web service 15 daqiqa harakatsizlikdan keyin uxlaydi va keyingi
-# so'rovda 30–60 soniya "Application loading" ko'rsatadi. Bu workflow ish
-# soatlarida har 5 daqiqada /health ni chaqirib, serverni uyg'oq tutadi.
+# ASOSIY yechim: Cloudflare Worker + Cron Trigger
+#   -> ops/render-keepalive/ (har 5 daqiqada /health ni chaqiradi)
 #
-# NEGA FAQAT ISH SOATLARI?
-# Render free plan oyiga 750 instance-hour beradi. 24/7 ping ≈ 744 soat —
-# deyarli butun limit, zaxira qolmaydi. Toshkent 09:00–23:00 ≈ 450 soat/oy,
-# ya'ni limitning ~60% i ishlatiladi.
+# Bu GitHub Actions workflow endi zaxira sifatida qoldirilgan. GitHub scheduled
+# workflow'larni kuchli kechiktirishi mumkin (ba'zan kuniga 2-3 marta), shuning
+# uchun u asosiy himoya emas.
 #
-# ESLATMA: GitHub scheduled workflow'larni bir necha daqiqaga kechiktirishi
-# mumkin (bu normal). 5 daqiqalik oraliq 15 daqiqalik uyqu chegarasidan ancha
-# kichik, shuning uchun kechikish muammo bo'lmaydi.
+# Render free plan oyiga 750 instance-hour beradi; 24/7 ishlash ~744 soat.
 # =============================================================================
 
 name: Server keep-alive
 
 on:
   schedule:
-    # UTC. Toshkent = UTC+5 → 04:00–18:59 UTC = 09:00–23:59 mahalliy vaqt.
-    - cron: '*/5 4-18 * * *'
+    # UTC. Har 5 daqiqada, 24/7.
+    - cron: '*/5 * * * *'
   # Qo'lda sinash uchun: Actions → Server keep-alive → Run workflow.
   workflow_dispatch:
 

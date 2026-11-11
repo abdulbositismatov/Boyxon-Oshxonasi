@@ -1,0 +1,16 @@
+# Render free-tier keep-alive (Cloudflare Worker + Cron Trigger)
+#
+# Render bepul web service 15 daqiqa inbound trafik bo'lmasa uxlaydi.
+# Bu worker har 5 daqiqada /health ni chaqiradi — Render limitidan (15 daq)
+# ancha oldin, shuning uchun servis doim uyg'oq turadi.
+#
+# Deploy: shu papkada `npx wrangler deploy`
+# O'chirish: `npx wrangler delete`
+
+name = "boyxon-keepalive"
+main = "src/index.js"
+compatibility_date = "2026-11-11"
+workers_dev = true
+
+[triggers]
+crons = ["*/5 * * * *"]
