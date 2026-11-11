@@ -2,7 +2,11 @@
 #
 # Render bepul web service 15 daqiqa inbound trafik bo'lmasa uxlaydi.
 # Bu worker har 5 daqiqada /health ni chaqiradi — Render limitidan (15 daq)
-# ancha oldin, shuning uchun servis doim uyg'oq turadi.
+# ancha oldin, shuning uchun servis uyg'oq turadi.
+#
+# Jadval: Toshkent 06:00–20:00 = UTC 01:00–15:00.
+#   cron `*/5 1-14 * * *` -> 01:00–14:55 UTC = 06:00–19:55 (UTC+5).
+#   Kechasi (20:00–06:00) uxlaydi -> oyiga ~420 soat, 750 limitidan ancha kam.
 #
 # Deploy: shu papkada `npx wrangler deploy`
 # O'chirish: `npx wrangler delete`
@@ -13,4 +17,4 @@ compatibility_date = "2026-11-11"
 workers_dev = true
 
 [triggers]
-crons = ["*/5 * * * *"]
+crons = ["*/5 1-14 * * *"]

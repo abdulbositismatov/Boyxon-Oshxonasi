@@ -14,7 +14,7 @@ npx wrangler deploy
 ## Tekshirish
 
 - Worker: <https://boyxon-keepalive.nmatullohmansurov.workers.dev>
-- Cron jadvali: `*/5 * * * *` (UTC)
+- Cron jadvali: `*/5 1-14 * * *` (UTC) = Toshkent 06:00–20:00
 
 ## O'chirish
 

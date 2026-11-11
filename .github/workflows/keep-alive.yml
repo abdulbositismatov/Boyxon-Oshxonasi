@@ -8,15 +8,15 @@
 # workflow'larni kuchli kechiktirishi mumkin (ba'zan kuniga 2-3 marta), shuning
 # uchun u asosiy himoya emas.
 #
-# Render free plan oyiga 750 instance-hour beradi; 24/7 ishlash ~744 soat.
+# Render free plan oyiga 750 instance-hour beradi; 06:00–20:00 ~420 soat/oy.
 # =============================================================================
 
 name: Server keep-alive
 
 on:
   schedule:
-    # UTC. Har 5 daqiqada, 24/7.
-    - cron: '*/5 * * * *'
+    # UTC. Toshkent 06:00–20:00 = 01:00–14:59 UTC.
+    - cron: '*/5 1-14 * * *'
   # Qo'lda sinash uchun: Actions → Server keep-alive → Run workflow.
   workflow_dispatch:
 
