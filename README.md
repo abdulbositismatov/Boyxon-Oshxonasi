@@ -1,6 +1,6 @@
 # Boyxon Oshxonasi
 
-[![CI](https://github.com/abdulbositismatov/Boyxon-Oshxonasi/actions/workflows/ci.yml/badge.svg)](https://github.com/abdulbositismatov/Boyxon-Oshxonasi/actions/workflows/ci.yml)
+[![CI](https://github.com/mansurvv710/Boyxon-Oshxonasi/actions/workflows/ci.yml/badge.svg)](https://github.com/mansurvv710/Boyxon-Oshxonasi/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
@@ -10,7 +10,7 @@ O'zbek milliy taomlarini (palov, somsa, kabob va boshqalar) Toshkent bo'ylab yet
 
 ```bash
 # 1) Reponi klonlash
-git clone https://github.com/abdulbositismatov/Boyxon-Oshxonasi.git
+git clone https://github.com/mansurvv710/Boyxon-Oshxonasi.git
 cd Boyxon-Oshxonasi
 
 # 2) Barcha bog'liqliklarni o'rnatish

@@ -16,7 +16,7 @@ Salom! Boyxon Oshxonasi loyihasiga qiziqishingiz uchun rahmat. Quyidagi qo'llanm
 
 ```bash
 # 1) Reponi klonlash
-git clone https://github.com/abdulbositismatov/Boyxon-Oshxonasi.git
+git clone https://github.com/mansurvv710/Boyxon-Oshxonasi.git
 cd Boyxon-Oshxonasi
 
 # 2) Barcha bog'liqliklarni o'rnatish (root'dan)
@@ -92,6 +92,6 @@ boyxon-oshxonasi/                 # repo ildizi
 
 ## Mualliflar
 
-- **Nematulloh** — loyiga biriktirilgan asosiy dasturchi ([@abdulbositismatov](https://github.com/abdulbositismatov))
+- **Nematulloh** — loyiga biriktirilgan asosiy dasturchi ([@mansurvv710](https://github.com/mansurvv710))
 
 Hissa qo'shgan har bir odamga minnatdormiz! 🙌
