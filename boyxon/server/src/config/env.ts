@@ -259,6 +259,14 @@ function loadEnv(): Env {
         '⚠️  Email provayderi sozlanmagan — tasdiqlash/parol tiklash xatlari yuborilmaydi. ' +
           (isWorkersRuntime ? 'BREVO_API_KEY yoki RESEND_API_KEY qo‘shing.' : 'SMTP yoki HTTP provayder qo‘shing.'),
       );
+    } else if (!httpEmail && smtpEmail) {
+      // Render bepul tarifi 25/465/587 portlarni bloklaydi: SMTP sozlangan
+      // bo'lsa ham xat ketmaydi va foydalanuvchi tasdiqlash kodini olmaydi.
+      // Bu jimgina sodir bo'lmasligi uchun aniq ogohlantiramiz.
+      console.warn(
+        '⚠️  Faqat SMTP sozlangan. Render bepul tarifi 25/465/587 portlarni bloklaydi — ' +
+          'xatlar yetib bormasligi mumkin. BREVO_API_KEY (bepul 300/kun) yoki RESEND_API_KEY qo‘shing.',
+      );
     }
 
     /**
