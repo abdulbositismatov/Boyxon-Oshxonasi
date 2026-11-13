@@ -36,10 +36,17 @@ export class RealtimeClient {
     const sep = this.opts.url.includes('?') ? '&' : '?';
     let ws: WebSocket;
     try {
-      ws = new WebSocket(`${this.opts.url}${sep}token=${encodeURIComponent(token)}`);
+      // Token sarlavhada ketadi (query emas) — loglar/tarixga tushmasin.
+      // `boyxon.v1` — server tanlaydigan protokol; `auth.<jwt>` — token tashuvchisi.
+      ws = new WebSocket(this.opts.url, ['boyxon.v1', `auth.${token}`]);
     } catch {
-      this.scheduleReconnect();
-      return;
+      // Ba'zi eski WebSocket implementatsiyalari subprotocol'ni qo'llamasligi mumkin.
+      try {
+        ws = new WebSocket(`${this.opts.url}${sep}token=${encodeURIComponent(token)}`);
+      } catch {
+        this.scheduleReconnect();
+        return;
+      }
     }
     this.ws = ws;
 

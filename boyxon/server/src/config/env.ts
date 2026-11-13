@@ -51,6 +51,17 @@ const envSchema = z.object({
   CLOUDINARY_API_KEY: z.string().default(''),
   CLOUDINARY_API_SECRET: z.string().default(''),
 
+  /**
+   * Media saqlash (rasmlar). O'zbekistonda Cloudinary ba'zan ishlamaydi,
+   * shu sababli asosiy variant — Cloudflare Workers + R2 (`ops/media-worker`).
+   * - `MEDIA_WORKER_URL`     — media worker manzili (masalan https://boyxon-media.xxx.workers.dev)
+   * - `MEDIA_WORKER_SECRET`  — yuklash/o'chirish uchun umumiy sir
+   * - `MEDIA_PUBLIC_URL`     — rasmlar ko'rinadigan asosiy manzil (CDN domen bo'lsa)
+   */
+  MEDIA_WORKER_URL: z.string().default(''),
+  MEDIA_WORKER_SECRET: z.string().default(''),
+  MEDIA_PUBLIC_URL: z.string().default(''),
+
   VAPID_PUBLIC_KEY: z.string().default(''),
   VAPID_PRIVATE_KEY: z.string().default(''),
   VAPID_EMAIL: z.string().default('mailto:admin@boyxon.uz'),
@@ -89,6 +100,16 @@ const envSchema = z.object({
   ADMIN_PASSWORD: z.string().default(''),
   /** Demo hisob paroli — faqat dev uchun; production'da seed bloklangan. */
   DEMO_PASSWORD: z.string().default(''),
+
+  /**
+   * Restoran koordinatalari — yetkazib berish narxi va ETA masofa bo'yicha
+   * hisoblanishi uchun. Berilmasa — qat'iy (flat) tarif ishlatiladi.
+   */
+  RESTAURANT_LAT: z.coerce.number().default(41.311081),
+  RESTAURANT_LNG: z.coerce.number().default(69.240562),
+
+  /** Kritik xatolar haqida ogohlantirish (Slack/Discord webhook). Bo'sh bo'lsa — o'chirilgan. */
+  ALERT_WEBHOOK_URL: z.string().default(''),
 
   /**
    * Tasdiqlanmagan email bilan kirishga ruxsat berilsinmi.
@@ -240,6 +261,23 @@ function loadEnv(): Env {
       );
     }
 
+    /**
+     * Rasm saqlash. Render diski ephemeral — lokal `uploads/` papkasi har
+     * deploy/restart'da o'chadi va barcha taom rasmlari yo'qoladi.
+     * Shu sababli production'da lokal fayl saqlash butunlay o'chiriladi:
+     * saqlash sozlanmagan bo'lsa, rasm yuklash aniq xato qaytaradi
+     * (jimgina yo'qotishdan ko'ra yaxshiroq).
+     */
+    const hasMediaStorage =
+      Boolean(e.MEDIA_WORKER_URL && e.MEDIA_WORKER_SECRET) ||
+      Boolean(e.CLOUDINARY_CLOUD_NAME && e.CLOUDINARY_API_KEY && e.CLOUDINARY_API_SECRET);
+    if (!hasMediaStorage) {
+      console.warn(
+        '⚠️  Rasm saqlash sozlanmagan — rasm yuklash o‘chirilgan. ' +
+          'MEDIA_WORKER_URL + MEDIA_WORKER_SECRET (tavsiya) yoki CLOUDINARY_* ni qo‘shing.',
+      );
+    }
+
     if (failures.length > 0) {
       console.error('❌ PRODUCTION xavfsizlik tekshiruvi muvaffaqiyatsiz:');
       for (const f of failures) console.error(`   • ${f}`);
@@ -284,5 +322,27 @@ export function corsOrigins(): string[] {
         .map((s) => s.trim().replace(/\/$/, ''))
         .filter(Boolean),
     ),
+  );
+}
+
+/**
+ * Media (rasm) origin'i — CSP `img-src` va client uchun.
+ * Bo'sh bo'lsa `''` (sozlanmagan).
+ */
+export function mediaOrigin(): string {
+  const raw = env.MEDIA_PUBLIC_URL || env.MEDIA_WORKER_URL;
+  if (!raw) return '';
+  try {
+    return new URL(raw).origin;
+  } catch {
+    return '';
+  }
+}
+
+/** Production'da rasm saqlash umuman sozlanganmi? */
+export function mediaStorageConfigured(): boolean {
+  return (
+    Boolean(env.MEDIA_WORKER_URL && env.MEDIA_WORKER_SECRET) ||
+    Boolean(env.CLOUDINARY_CLOUD_NAME && env.CLOUDINARY_API_KEY && env.CLOUDINARY_API_SECRET)
   );
 }

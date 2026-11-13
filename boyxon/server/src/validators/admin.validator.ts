@@ -79,6 +79,12 @@ export const updateSettingsSchema = z
       .regex(/^[0-9 ]*$/, 'Karta raqami faqat raqam va bo‘sh joydan iborat bo‘lsin')
       .optional(),
     cardHolder: z.string().trim().max(80).optional(),
+    // Yetkazib berish tarifi — admin panelidan boshqariladi.
+    deliveryBaseFee: z.number().int().min(0).max(10_000_000).optional(),
+    deliveryPerKm: z.number().int().min(0).max(1_000_000).optional(),
+    freeDeliveryFrom: z.number().int().min(0).max(100_000_000).optional(),
+    deliveryMaxKm: z.number().min(1).max(100).optional(),
+    prepTimeMin: z.number().int().min(1).max(180).optional(),
   })
   .refine((data) => Object.values(data).some((value) => value !== undefined), {
     message: 'Kamida bitta sozlama kiriting',

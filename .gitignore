@@ -4,6 +4,7 @@ node_modules/
 .env.*
 !.env.example
 .dev-secrets.json
+.media-secret.txt
 dist/
 build/
 
@@ -14,6 +15,8 @@ vapid-keys.json
 strings.json
 extract.cjs
 i18n-scan.txt
+server-tsc.txt
+Screenshot_*.png
 
 # TypeScript incremental build artefaktlari (git'ga tushmasligi shart —
 # ular build vaqtida qayta yaratiladi; ilgari tracked bo'lib, vite.config.js

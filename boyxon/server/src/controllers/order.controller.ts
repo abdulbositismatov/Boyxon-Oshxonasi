@@ -11,6 +11,8 @@ import { sendOrderEmail } from '../services/email.service';
 import { notifyUser } from '../services/notify.service';
 import { getIo } from '../socket';
 import { Review, recalcDishRating } from '../models/Review.model';
+import { PromoRedemption } from '../models/PromoRedemption.model';
+import { quoteDelivery, calcDiscount } from '../services/delivery.service';
 import type { AuthRequest } from '../types/express';
 
 /** GET /api/orders/:id — faqat o'z buyurtmasi (yoki admin). */
@@ -63,6 +65,25 @@ export const cancelOrder = asyncHandler(async (req: Request, res: Response) => {
       { $set: { usedCount: 0 } },
     );
   }
+
+  // Promo "claim" ni bo'shatamiz — mijoz keyingi buyurtmada qayta ishlata oladi.
+  await PromoRedemption.deleteOne({ order: order._id }).catch(() => undefined);
+
+  // Ombor qoldig'ini qaytaramiz — faqat cheklangan (number) qoldiqqa ega taomlar uchun.
+  // `stock: null` (cheklovsiz) taomga $inc qo'llanmaydi, aks holda "null" o'rniga son paydo bo'lardi.
+  await Promise.all(
+    order.items.map((item) => {
+      const dishId =
+        typeof item.dish === 'object' && item.dish !== null
+          ? (item.dish as unknown as { _id: unknown })._id
+          : item.dish;
+      return Dish.updateOne(
+        { _id: dishId, stock: { $type: 'number' } },
+        { $inc: { stock: item.quantity } },
+      );
+    }),
+  ).catch(() => undefined);
+
   getIo()?.to('admin').emit('order:updated', { orderId: order.id, status: 'cancelled' });
   res.json(ok(order, 'Buyurtma bekor qilindi'));
 });
@@ -109,15 +130,6 @@ export const reviewOrder = asyncHandler(async (req: Request, res: Response) => {
 });
 
 
-const FREE_DELIVERY_FROM = 150000;
-const DELIVERY_FEE = 12000;
-
-function calcDiscount(type: 'percent' | 'fixed', value: number, subtotal: number, max?: number): number {
-  const raw = type === 'percent' ? Math.floor((subtotal * value) / 100) : value;
-  const capped = max && max > 0 ? Math.min(raw, max) : raw;
-  return Math.min(capped, subtotal);
-}
-
 type CreateBody = {
   items: { dish: string; quantity: number; customizations?: string }[];
   deliveryType: 'delivery' | 'pickup';
@@ -137,12 +149,22 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
 
   // Oshxona yopiq bo'lsa yangi buyurtma yaratilmaydi. Bu tekshiruv serverda —
   // client UI'ni chetlab o'tish yoki eskirgan holat bilan buyurtma berish mumkin emas.
-  const settings = await Setting.findOne({ key: 'main' }).select('kitchenOpen').lean();
+  const settings = await Setting.findOne({ key: 'main' }).lean();
   if (settings?.kitchenOpen === false) throw ApiError.kitchenClosed();
 
   const dishIds = items.map((i) => i.dish);
   const dishes = await Dish.find({ _id: { $in: dishIds }, isActive: true });
   if (dishes.length !== items.length) throw ApiError.badRequest('Ba’zi taomlar topilmadi');
+
+  // Ombor oldindan tekshiriladi (tez xato), aniq kamaytirish esa atomar —
+  // pastda, buyurtma yozilishidan oldin.
+  for (const i of items) {
+    const d = dishes.find((x) => x.id === i.dish);
+    if (!d) throw ApiError.badRequest('Taom topilmadi');
+    if (typeof d.stock === 'number' && d.stock < i.quantity) {
+      throw ApiError.badRequest(`"${d.name}" tugagan yoki yetarli emas`);
+    }
+  }
 
   const orderItems = items.map((i) => {
     const d = dishes.find((x) => x.id === i.dish);
@@ -150,10 +172,15 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     return { dish: d._id, name: d.name, nameRu: d.nameRu, nameEn: d.nameEn, price: d.price, quantity: i.quantity, customizations: i.customizations };
   });
   const subtotal = orderItems.reduce((s, i) => s + i.price * i.quantity, 0);
-  const deliveryFee = deliveryType === 'pickup' ? 0 : subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
+
+  // Yetkazish narxi va ETA — masofa bo'yicha (settings + restoran koordinatalari).
+  // Ilgari 12 000 so'm va 45 daqiqa qat'iy yozilgan edi.
+  const delivery = quoteDelivery({ deliveryType, subtotal, address, policy: settings });
+  const deliveryFee = delivery.fee;
 
   let discount = 0;
   let promoDoc: PromoDoc | null = null;
+  let redemptionSeq: number | null = null;
   if (promoCode) {
     const code = promoCode.toUpperCase().trim();
     promoDoc = await Promo.findOne({ code });
@@ -162,14 +189,20 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     if (promoDoc.validFrom && promoDoc.validFrom > now) throw ApiError.badRequest('Promo hali boshlanmagan');
     if (promoDoc.validUntil && promoDoc.validUntil < now) throw ApiError.badRequest('Promo muddati o‘tgan');
     if (subtotal < promoDoc.minOrderAmount) throw ApiError.badRequest('Minimal summa yetmadi');
-    // ATOMAR perUserLimit: order count + usedCount bir martada tekshiriladi.
-    // Ikki foydalanuvchi bir vaqtda olsa ham limit oshib ketmaydi.
-    const myCount = await Order.countDocuments({
-      user: userId,
-      promoCode: promoDoc.code,
-      status: { $ne: 'cancelled' },
-    });
+    // ATOMAR perUserLimit: har bir ishlatish uchun PromoRedemption yozuvi
+    // yaratiladi. `(promo, user, seq)` unique bo'lgani uchun ikki parallel
+    // so'rov bir xil seq'ni olishga urinsa — ikkinchisi E11000 bilan rad etiladi.
+    const myCount = await PromoRedemption.countDocuments({ promo: promoDoc._id, user: userId });
     if (myCount >= promoDoc.perUserLimit) throw ApiError.badRequest('Bu promodan foydalangansiz');
+    try {
+      await PromoRedemption.create({ promo: promoDoc._id, user: userId, seq: myCount });
+      redemptionSeq = myCount;
+    } catch (err) {
+      if ((err as { code?: number }).code === 11000) {
+        throw ApiError.badRequest('Bu promodan foydalangansiz');
+      }
+      throw err;
+    }
     // ATOMAR limit: usedCount++ va limit tekshiruvi BITTA operatsiyada.
     // Ikki mijoz bir vaqtda olsa ham usageLimit oshib ketmaydi —
     // Mongo faqat usedCount < usageLimit bo'lsa yangilaydi.
@@ -193,8 +226,31 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   }
 
   const total = subtotal + deliveryFee - discount;
+
+  // Ombor: har bir taom atomar kamaytiriladi. `stock: { $gte: qty }` sharti
+  // Mongo tomonida tekshiriladi — ikki parallel buyurtma bir dona qoldiqni
+  // ikki marta sotib olmaydi. Xato bo'lsa hammasi qaytariladi.
+  const stockClaims: { id: string; quantity: number }[] = [];
+  const releaseStock = async (): Promise<void> => {
+    await Promise.all(
+      stockClaims.map((c) => Dish.updateOne({ _id: c.id }, { $inc: { stock: c.quantity } })),
+    );
+  };
+
   let order;
   try {
+    for (const i of items) {
+      const d = dishes.find((x) => x.id === i.dish)!;
+      if (typeof d.stock !== 'number') continue;
+      const claimed = await Dish.findOneAndUpdate(
+        { _id: d._id, stock: { $gte: i.quantity } },
+        { $inc: { stock: -i.quantity } },
+        { new: true },
+      );
+      if (!claimed) throw ApiError.badRequest(`"${d.name}" tugagan`);
+      stockClaims.push({ id: d.id, quantity: i.quantity });
+    }
+
     order = await Order.create({
       user: userId,
       items: orderItems,
@@ -207,14 +263,27 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
       address: deliveryType === 'delivery' ? address : undefined,
       paymentMethod,
       notes,
-      estimatedDeliveryAt: new Date(Date.now() + 45 * 60 * 1000),
+      deliveryDistanceKm: delivery.distanceKm,
+      estimatedDeliveryAt: new Date(Date.now() + delivery.etaMinutes * 60 * 1000),
     });
+
+    // Promo "claim" ni buyurtmaga bog'laymiz — bekor qilinganda shu orqali topiladi.
+    if (promoDoc && redemptionSeq !== null) {
+      await PromoRedemption.updateOne(
+        { promo: promoDoc._id, user: userId, seq: redemptionSeq },
+        { order: order._id },
+      );
+    }
   } catch (err) {
+    await releaseStock().catch(() => undefined);
     if (promoDoc) {
       await Promo.findOneAndUpdate(
         { _id: promoDoc._id, usedCount: { $gt: 0 } },
         { $inc: { usedCount: -1 } },
       );
+      if (redemptionSeq !== null) {
+        await PromoRedemption.deleteOne({ promo: promoDoc._id, user: userId, seq: redemptionSeq });
+      }
     }
     throw err;
   }

@@ -8,10 +8,10 @@
     "dev:local": "tsx watch src/run-local.ts",
     "prebuild": "node scripts/ensure-client-build.cjs",
     "build": "tsc",
-    "prestart": "node --max-old-space-size=460 ./node_modules/typescript/bin/tsc",
     "start": "node dist/index.js",
     "seed": "tsx src/utils/seed.ts",
     "test": "tsx src/utils/test-e2e.ts",
+    "test:unit": "vitest run",
     "lint": "tsc --noEmit",
     "deploy:cf": "powershell -ExecutionPolicy Bypass -File ./scripts/deploy-cloudflare.ps1"
   },
@@ -22,7 +22,6 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "express-rate-limit": "^7.3.1",
     "google-auth-library": "^9.11.0",
     "helmet": "^7.1.0",
     "jsonwebtoken": "^9.0.2",
@@ -35,7 +34,7 @@
     "pino-http": "^10.1.0",
     "web-push": "^3.6.7",
     "ws": "^8.22.0",
-    "zod": "^3.23.8"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
@@ -53,6 +52,7 @@
     "pino-pretty": "^13.2.0",
     "tsx": "^4.16.2",
     "typescript": "^5.3.3",
+    "vitest": "^2.1.9",
     "wrangler": "^4.154.0"
   }
 }

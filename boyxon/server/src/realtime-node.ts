@@ -40,7 +40,18 @@ function rejectUpgrade(socket: Duplex, status: number, message: string): void {
 }
 
 export function attachRealtimeServer(server: Server): WebSocketServer {
-  const wss = new WebSocketServer({ noServer: true });
+  /**
+   * Token endi URL query'da emas, `Sec-WebSocket-Protocol` sarlavhasida keladi:
+   *   new WebSocket(url, ['boyxon.v1', 'auth.<jwt>'])
+   *
+   * Sabab: query string'lar proksi/CDN loglariga, brauzer tarixiga va
+   * `Referer`ga tushib qoladi. Sarlavha esa loglanmaydi.
+   * Eski mobil ilova uchun `?token=` zaxira sifatida qoldirilgan.
+   */
+  const wss = new WebSocketServer({
+    noServer: true,
+    handleProtocols: (protocols) => (protocols.has('boyxon.v1') ? 'boyxon.v1' : false),
+  });
   const clients = new Map<WebSocket, ClientInfo>();
 
   setRealtimeBroadcaster((room, event, payload) => {
@@ -63,7 +74,14 @@ export function attachRealtimeServer(server: Server): WebSocketServer {
       return;
     }
 
-    const token = url.searchParams.get('token');
+    const protocolHeader = String(req.headers['sec-websocket-protocol'] ?? '');
+    const fromProtocol = protocolHeader
+      .split(',')
+      .map((p) => p.trim())
+      .find((p) => p.startsWith('auth.'))
+      ?.slice('auth.'.length);
+
+    const token = fromProtocol || url.searchParams.get('token');
     if (!token) return rejectUpgrade(socket, 401, 'Token kerak');
 
     let decoded: { id: string; ver: number };

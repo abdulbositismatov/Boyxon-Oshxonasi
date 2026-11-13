@@ -10,6 +10,7 @@ import { Order } from '../models/Order.model';
 import { uploadBufferToCloudinary, deleteFromCloudinary } from '../services/cloudinary.service';
 import { Category } from '../models/Category.model';
 import { Promo } from '../models/Promo.model';
+import { PromoRedemption } from '../models/PromoRedemption.model';
 import { Notification } from '../models/Notification.model';
 import { Setting } from '../models/Setting.model';
 import { sendPushToUsers } from '../services/push.service';
@@ -83,6 +84,18 @@ export const updateOrderStatus = asyncHandler(async (req: Request, res: Response
       { code: order.promoCode, usedCount: { $gt: 0 } },
       { $inc: { usedCount: -1 } },
     );
+  }
+  // Bekor qilishda promo "claim" va ombor qoldig'i qaytariladi.
+  if (statusChanged && status === 'cancelled' && !wasCancelled) {
+    await PromoRedemption.deleteOne({ order: order._id }).catch(() => undefined);
+    await Promise.all(
+      order.items.map((item) =>
+        Dish.updateOne(
+          { _id: item.dish, stock: { $type: 'number' } },
+          { $inc: { stock: item.quantity } },
+        ),
+      ),
+    ).catch(() => undefined);
   }
   if (!statusChanged) {
     res.json(ok(order, 'Yangilandi'));
@@ -306,15 +319,34 @@ export const stats = asyncHandler(async (_req: Request, res: Response) => {
 
 /** PATCH /api/admin/settings — oshxona holati va karta rekvizitlarini yangilash. */
 export const updateSettings = asyncHandler(async (req: Request, res: Response) => {
-  const { kitchenOpen, cardNumber, cardHolder } = req.body as {
+  const {
+    kitchenOpen,
+    cardNumber,
+    cardHolder,
+    deliveryBaseFee,
+    deliveryPerKm,
+    freeDeliveryFrom,
+    deliveryMaxKm,
+    prepTimeMin,
+  } = req.body as {
     kitchenOpen?: boolean;
     cardNumber?: string;
     cardHolder?: string;
+    deliveryBaseFee?: number;
+    deliveryPerKm?: number;
+    freeDeliveryFrom?: number;
+    deliveryMaxKm?: number;
+    prepTimeMin?: number;
   };
   const update: Record<string, unknown> = {};
   if (kitchenOpen !== undefined) update.kitchenOpen = kitchenOpen;
   if (cardNumber !== undefined) update.cardNumber = cardNumber.replace(/\s+/g, ' ').trim();
   if (cardHolder !== undefined) update.cardHolder = cardHolder.trim();
+  if (deliveryBaseFee !== undefined) update.deliveryBaseFee = deliveryBaseFee;
+  if (deliveryPerKm !== undefined) update.deliveryPerKm = deliveryPerKm;
+  if (freeDeliveryFrom !== undefined) update.freeDeliveryFrom = freeDeliveryFrom;
+  if (deliveryMaxKm !== undefined) update.deliveryMaxKm = deliveryMaxKm;
+  if (prepTimeMin !== undefined) update.prepTimeMin = prepTimeMin;
 
   const settings = await Setting.findOneAndUpdate(
     { key: 'main' },
@@ -327,6 +359,11 @@ export const updateSettings = asyncHandler(async (req: Request, res: Response) =
         kitchenOpen: settings.kitchenOpen,
         cardNumber: settings.cardNumber ?? '',
         cardHolder: settings.cardHolder ?? '',
+        deliveryBaseFee: settings.deliveryBaseFee,
+        deliveryPerKm: settings.deliveryPerKm,
+        freeDeliveryFrom: settings.freeDeliveryFrom,
+        deliveryMaxKm: settings.deliveryMaxKm,
+        prepTimeMin: settings.prepTimeMin,
       },
       'Sozlamalar yangilandi',
     ),

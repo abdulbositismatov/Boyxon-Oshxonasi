@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from 'express';
 import { ApiError } from '../utils/ApiError';
 import { env } from '../config/env';
+import { sendAlert } from '../utils/alert';
 
 /** Markaziy xato ushlagich — oxirgi middleware. */
  // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -68,5 +69,9 @@ export function errorHandler(err: unknown, _req: Request, res: Response, _next: 
     return;
   }
   if (env.NODE_ENV !== 'production') console.error('❌ Server xatosi:', err);
+  sendAlert('Kutilmagan server xatosi', {
+    err: (err as Error)?.message,
+    path: _req.method ? `${_req.method} ${_req.originalUrl}` : undefined,
+  });
   res.status(500).json({ success: false, message: 'Serverda kutilmagan xato', data: null });
 }

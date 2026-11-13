@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ChefHat, Clock, CreditCard, IndianRupee, Users } from 'lucide-react';
+import { ChefHat, Clock, CreditCard, IndianRupee, Truck, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { adminApi } from '../../api/admin.api';
@@ -12,6 +12,22 @@ import { formatDate, formatPrice } from '../../lib/format';
 
 const inputCls =
   'h-11 w-full rounded-xl border border-ink-line bg-surface px-3 text-sm outline-none focus:border-primary-500';
+
+type DeliverySettings = {
+  deliveryBaseFee: number;
+  deliveryPerKm: number;
+  freeDeliveryFrom: number;
+  deliveryMaxKm: number;
+  prepTimeMin: number;
+};
+
+const DELIVERY_FIELDS = [
+  ['deliveryBaseFee', 'admin.delivery_base_fee'],
+  ['deliveryPerKm', 'admin.delivery_per_km'],
+  ['freeDeliveryFrom', 'admin.free_delivery_from'],
+  ['deliveryMaxKm', 'admin.delivery_max_km'],
+  ['prepTimeMin', 'admin.prep_time_min'],
+] as const;
 
 export default function AdminDashboard() {
   const { t } = useTranslation();
@@ -29,11 +45,35 @@ export default function AdminDashboard() {
   const kitchenOpen = kitchen?.kitchenOpen;
   const [cardNumber, setCardNumber] = useState('');
   const [cardHolder, setCardHolder] = useState('');
+  const [delivery, setDelivery] = useState<DeliverySettings>({
+    deliveryBaseFee: 12000,
+    deliveryPerKm: 1500,
+    freeDeliveryFrom: 150000,
+    deliveryMaxKm: 15,
+    prepTimeMin: 30,
+  });
 
   useEffect(() => {
     setCardNumber(kitchen?.cardNumber ?? '');
     setCardHolder(kitchen?.cardHolder ?? '');
-  }, [kitchen?.cardNumber, kitchen?.cardHolder]);
+    if (kitchen) {
+      setDelivery({
+        deliveryBaseFee: kitchen.deliveryBaseFee ?? 12000,
+        deliveryPerKm: kitchen.deliveryPerKm ?? 1500,
+        freeDeliveryFrom: kitchen.freeDeliveryFrom ?? 150000,
+        deliveryMaxKm: kitchen.deliveryMaxKm ?? 15,
+        prepTimeMin: kitchen.prepTimeMin ?? 30,
+      });
+    }
+  }, [
+    kitchen?.cardNumber,
+    kitchen?.cardHolder,
+    kitchen?.deliveryBaseFee,
+    kitchen?.deliveryPerKm,
+    kitchen?.freeDeliveryFrom,
+    kitchen?.deliveryMaxKm,
+    kitchen?.prepTimeMin,
+  ]);
 
   const toggleKitchen = useMutation({
     mutationFn: (next: boolean) => adminApi.updateSettings({ kitchenOpen: next }),
@@ -50,6 +90,17 @@ export default function AdminDashboard() {
         cardNumber: cardNumber.replace(/\s+/g, ' ').trim(),
         cardHolder: cardHolder.trim(),
       }),
+    onSuccess: (r) => {
+      qc.setQueryData(['settings'], r.data);
+      toast.success(t('common.success'));
+    },
+    onError: (e) => {
+      const err = e as { response?: { data?: { message?: string } } };
+      toast.error(err?.response?.data?.message ?? t('common.error'));
+    },
+  });
+  const saveDelivery = useMutation({
+    mutationFn: () => adminApi.updateSettings(delivery),
     onSuccess: (r) => {
       qc.setQueryData(['settings'], r.data);
       toast.success(t('common.success'));
@@ -154,6 +205,43 @@ export default function AdminDashboard() {
           <p className="text-xs text-ink-300">{t('payment.card_hint')}</p>
           <Button size="sm" disabled={saveCard.isPending} onClick={() => saveCard.mutate()}>
             {saveCard.isPending ? t('common.saving') : t('common.save')}
+          </Button>
+        </div>
+      </Card>
+
+      <Card className="p-4">
+        <div className="flex items-start gap-3">
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-primary-50 text-primary-700">
+            <Truck className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="font-display font-bold">{t('admin.delivery_title')}</p>
+            <p className="text-sm text-ink-300">{t('admin.delivery_desc')}</p>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {DELIVERY_FIELDS.map(([key, labelKey]) => (
+            <label key={key} className="block text-sm">
+              <span className="mb-1.5 block font-semibold text-ink-700">{t(labelKey)}</span>
+              <input
+                className={inputCls}
+                type="number"
+                min={0}
+                inputMode="numeric"
+                value={delivery[key]}
+                onChange={(e) =>
+                  setDelivery((prev) => ({
+                    ...prev,
+                    [key]: Math.max(0, Number(e.target.value) || 0),
+                  }))
+                }
+              />
+            </label>
+          ))}
+        </div>
+        <div className="mt-3 flex justify-end">
+          <Button size="sm" disabled={saveDelivery.isPending} onClick={() => saveDelivery.mutate()}>
+            {saveDelivery.isPending ? t('common.saving') : t('common.save')}
           </Button>
         </div>
       </Card>

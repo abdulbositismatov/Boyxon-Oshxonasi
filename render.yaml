@@ -26,7 +26,9 @@ services:
     buildCommand: cd ../client && npm install --include=dev && npm run build && cd ../server && npm install --include=dev && npm run build
     startCommand: npm start
     healthCheckPath: /health
-    autoDeployTrigger: commit
+    # Faqat GitHub CI (lint+test+build) muvaffaqiyatli o'tgach deploy qilinadi.
+    # Ilgari `commit` edi — sinmagan kod prodga CI'dan oldin chiqardi.
+    autoDeployTrigger: checksPass
     envVars:
       - key: NODE_ENV
         value: production
@@ -56,10 +58,21 @@ services:
       # JWT_RESET_SECRET      = (48 hex)
       # ADMIN_EMAIL           = admin@boyxon.uz
       # ADMIN_PASSWORD        = (kuchli, >=12)
-      # SMTP_USER / SMTP_PASS = (ixtiyoriy)
+      #
+      # --- Email (Render bepul SMTP portlarini bloklaydi — HTTP provayder SHART) ---
+      # EMAIL_PROVIDER        = resend
+      # RESEND_API_KEY        = re_...
+      # EMAIL_FROM            = Boyxon Oshxonasi <no-reply@yourdomain.uz>
+      #
+      # --- Rasmlar (Cloudflare R2 + media worker) ---
+      # MEDIA_WORKER_URL      = https://boyxon-media.<subdomain>.workers.dev
+      # MEDIA_WORKER_SECRET   = (wrangler secret)
+      #
+      # --- Ixtiyoriy ---
       # VAPID_PUBLIC_KEY / VAPID_PRIVATE_KEY / VAPID_EMAIL
       # GOOGLE_CLIENT_ID / GOOGLE_CLIENT_SECRET
-      # CLOUDINARY_* (ixtiyoriy)
+      # ALERT_WEBHOOK_URL     = https://discord.com/api/webhooks/...
+      # RESTAURANT_LAT / RESTAURANT_LNG
 
   # ---------------------------------------------------------
   # LEGACY: alohida statik frontend — endi sof REDIRECTOR.
@@ -75,7 +88,7 @@ services:
     rootDir: boyxon/client
     buildCommand: npm install --include=dev && npm run build && rm -f dist/index.html dist/sw.js
     staticPublishPath: ./dist
-    autoDeployTrigger: commit
+    autoDeployTrigger: checksPass
     # Build paytida API manzili — server domeniga ishora qilishi kerak
     envVars:
       - key: VITE_API_URL

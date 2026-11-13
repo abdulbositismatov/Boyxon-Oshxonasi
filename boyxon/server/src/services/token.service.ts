@@ -123,8 +123,9 @@ export const REFRESH_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 /**
  * Refresh cookie sozlamalari.
  * - Dev (localhost): sameSite 'lax' — OAuth top-level redirect'da cookie o'rnatiladi.
- * - Prod (Vercel + Railway = cross-site): sameSite 'none' + secure kerak,
- *   aks holda cross-site so'rovda cookie yuborilmaydi va refresh ishlamaydi.
+ * - Prod: sayt va API bitta origin'dan beriladi (`boyxon-server.onrender.com`),
+ *   shu sababli `sameSite: 'lax'` yetarli va xavfsizroq. `'none'` faqat
+ *   haqiqiy cross-site (alohida API domeni) holatida kerak bo'ladi.
  * - path '/api/auth' — cookie faqat auth yo'llariga yuboriladi (CSRF yuzasini kamaytiradi).
  */
 export function refreshCookieOptions() {
@@ -132,7 +133,7 @@ export function refreshCookieOptions() {
   return {
     httpOnly: true,
     secure: isProd,
-    sameSite: isProd ? ('none' as const) : ('lax' as const),
+    sameSite: 'lax' as const,
     maxAge: REFRESH_TTL_MS,
     path: '/api/auth',
   };

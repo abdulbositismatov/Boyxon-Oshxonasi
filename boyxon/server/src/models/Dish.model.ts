@@ -21,6 +21,7 @@ export interface DishDoc extends Document {
   orderCount: number;
   isActive: boolean;
   isFeatured: boolean;
+  stock?: number | null;
 }
 
 const DishSchema = new Schema<DishDoc>(
@@ -37,6 +38,11 @@ const DishSchema = new Schema<DishDoc>(
     category: { type: Schema.Types.ObjectId, ref: 'Category', required: true, index: true },
     image: { type: String, default: null },
     imagePublicId: { type: String },
+    /**
+     * Ombor qoldig'i. `null` — cheklovsiz (default). Son bo'lsa, buyurtma
+     * yaratishda atomar kamaytiriladi va bekor qilinsa qaytariladi.
+     */
+    stock: { type: Number, default: null, min: 0 },
     deliveryTime: { type: Number, default: 30, min: 1 },
     calories: { type: Number, min: 0 },
     tags: { type: [String], default: [] },

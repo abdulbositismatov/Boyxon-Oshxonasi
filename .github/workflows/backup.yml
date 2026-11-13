@@ -1,0 +1,49 @@
+name: MongoDB backup
+
+# Bepul Atlas M0 tarifida avtomatik backup YO'Q. Bu workflow kunlik
+# `mongodump` qilib, arxivni GitHub artifact sifatida 30 kun saqlaydi.
+#
+# Kerakli secret: MONGODB_URI (Settings → Secrets and variables → Actions).
+# Ixtiyoriy: BACKUP_ENCRYPTION_KEY (age/gpg) — hozircha shifrlanmaydi,
+# repo private bo'lsa artifact ham private bo'ladi.
+
+on:
+  schedule:
+    # Har kuni 22:00 UTC (03:00 Toshkent) — eng kam trafik vaqti.
+    - cron: '0 22 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  dump:
+    name: mongodump
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: MongoDB Database Tools o'rnatish
+        run: |
+          wget -q https://fastdl.mongodb.org/tools/db/mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
+          sudo dpkg -i mongodb-database-tools-ubuntu2204-x86_64-100.10.0.deb
+
+      - name: Dump
+        env:
+          MONGODB_URI: ${{ secrets.MONGODB_URI }}
+        run: |
+          if [ -z "$MONGODB_URI" ]; then
+            echo "::error::MONGODB_URI secret sozlanmagan"
+            exit 1
+          fi
+          STAMP=$(date -u +%Y%m%d-%H%M%S)
+          mongodump --uri="$MONGODB_URI" --archive="boyxon-$STAMP.gz" --gzip
+          echo "ARCHIVE=boyxon-$STAMP.gz" >> "$GITHUB_ENV"
+
+      - name: Artifact yuklash
+        uses: actions/upload-artifact@v4
+        with:
+          name: boyxon-backup-${{ github.run_id }}
+          path: ${{ env.ARCHIVE }}
+          retention-days: 30
+          if-no-files-found: error

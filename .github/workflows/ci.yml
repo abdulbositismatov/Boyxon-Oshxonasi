@@ -4,19 +4,21 @@ on:
   push:
     branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 permissions:
   contents: read
 
-jobs:
-  lint-and-test:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+# Bir branch uchun eski run'ni bekor qilamiz — navbat to'planmasin.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
 
-    services:
-      # CI uchun xotirada MongoDB (mongodb-memory-server o'zi basqaradi)
-      # Yoki agar локал Mongo kerak bo'lsa — docker service qo'shish mumkin
+jobs:
+  quality:
+    name: Lint + test + build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - name: Reponi yuklash
@@ -26,30 +28,35 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: Bog'liqliklarni o'rnatish (root + server + client)
+      - name: Bog'liqliklarni o'rnatish
         run: |
           npm install
           cd boyxon/server && npm install
           cd ../client && npm install
 
-      - name: Server TypeScript tekshiruv (lint)
+      - name: Server TypeScript tekshiruv
         run: cd boyxon/server && npm run lint
 
-      - name: Client TypeScript tekshiruv (lint)
+      - name: Client TypeScript tekshiruv
         run: cd boyxon/client && npm run lint
 
-      - name: Server testlari (63 ta e2e tekshiruv)
+      - name: Unit testlar (narx/ETA hisobi)
+        run: cd boyxon/server && npm run test:unit
+
+      - name: Server e2e testlari
         run: cd boyxon/server && npm test
 
-      - name: Client build tekshiruv
+      - name: Server build
+        run: cd boyxon/server && npm run build
+
+      - name: Client build
         run: cd boyxon/client && npm run build
 
-  security-audit:
-    needs: lint-and-test
+  security:
+    name: Xavfsizlik auditi
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
+    timeout-minutes: 10
 
     steps:
       - name: Reponi yuklash
@@ -59,10 +66,14 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
-      - name: Server audit
-        run: |
-          cd boyxon/server
-          npm install
-          npm audit --omit=dev --audit-level=critical || true
+      - name: Server bog'liqliklari
+        run: cd boyxon/server && npm install
+
+      # `|| true` OLIB TASHLANDI: high/critical zaiflik bo'lsa CI yiqiladi.
+      # Ilgari audit hech qachon muvaffaqiyatsiz bo'lmasdi — ya'ni foydasiz edi.
+      - name: Server auditi (high+)
+        run: cd boyxon/server && npm audit --omit=dev --audit-level=high
+
+      - name: Client auditi (high+)
+        run: cd boyxon/client && npm audit --omit=dev --audit-level=high

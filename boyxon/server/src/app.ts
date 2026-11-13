@@ -3,14 +3,17 @@ import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import passport from 'passport';
+import mongoose from 'mongoose';
+import pinoHttp from 'pino-http';
 import path from 'node:path';
 import { existsSync } from 'node:fs';
-import { corsOrigins, env, isProd } from './config/env';
+import { corsOrigins, env, isProd, mediaOrigin } from './config/env';
 import { initPassport } from './config/passport';
 import { errorHandler } from './middlewares/error.middleware';
 import { jsonBody } from './middlewares/body.middleware';
 import { apiLimiter } from './middlewares/rateLimit.middleware';
 import { isWorkersRuntime } from './utils/runtime';
+import { logger } from './utils/logger';
 import { authRouter } from './routes/auth.routes';
 import { categoryRouter } from './routes/category.routes';
 import { dishRouter } from './routes/dish.routes';
@@ -27,24 +30,38 @@ import { apiRobots, sitemap } from './controllers/seo.controller';
 /**
  * SPA HTML va statik fayllar uchun CSP. Ilgari bu Render static site
  * sozlamasida (`render.yaml`) turardi; endi frontend backend'dan beriladi.
- * `connect-src 'self'` API va WebSocket'ni (wss) ham qamrab oladi.
+ *
+ * Manzillar `CLIENT_URL` va media sozlamalaridan hosil qilinadi — domen
+ * o'zgarsa, CSP'ni qo'lda tahrirlash shart emas.
  */
-const SITE_CSP = [
-  "default-src 'self'",
-  "base-uri 'self'",
-  "object-src 'none'",
-  "frame-ancestors 'none'",
-  "form-action 'self'",
-  "script-src 'self'",
-  "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob: https://res.cloudinary.com https://tile.openstreetmap.org",
-  "font-src 'self' data:",
-  "connect-src 'self' https://boyxon-server.onrender.com wss://boyxon-server.onrender.com https://nominatim.openstreetmap.org",
-  "manifest-src 'self'",
-  "worker-src 'self' blob:",
-  "upgrade-insecure-requests",
-  "trusted-types 'safe-script' 'safe-url' 'html'",
-].join('; ');
+function buildSiteCsp(): string {
+  const origins = corsOrigins();
+  const wsOrigins = origins.map((o) => o.replace(/^http/i, 'ws'));
+  const media = mediaOrigin();
+
+  const imgSrc = ["'self'", 'data:', 'blob:', 'https://res.cloudinary.com', 'https://tile.openstreetmap.org'];
+  if (media) imgSrc.push(media);
+
+  return [
+    "default-src 'self'",
+    "base-uri 'self'",
+    "object-src 'none'",
+    "frame-ancestors 'none'",
+    "form-action 'self'",
+    "script-src 'self'",
+    "style-src 'self' 'unsafe-inline'",
+    `img-src ${imgSrc.join(' ')}`,
+    "font-src 'self' data:",
+    `connect-src 'self' ${Array.from(new Set([...origins, ...wsOrigins])).join(' ')} https://nominatim.openstreetmap.org`,
+    "manifest-src 'self'",
+    "worker-src 'self' blob:",
+    'upgrade-insecure-requests',
+    "trusted-types 'safe-script' 'safe-url' 'html'",
+  ].join('; ');
+}
+
+const SITE_CSP = buildSiteCsp();
+
 
 export function createApp() {
   const app = express();
@@ -107,8 +124,41 @@ export function createApp() {
   app.use(jsonBody);
   app.use(cookieParser());
 
-  // Rasm yuklash papkasini ochiq qilamiz (faqat Node — Workers'da fayl tizimi yo'q).
+  /**
+   * Strukturali so'rov logi (pino-http). Faqat Node'da — Workers'da har bir
+   * so'rov uchun qo'shimcha yuk bo'lmasin (u yerda Cloudflare o'zi loglaydi).
+   * `/health` chiqarib tashlanadi: keep-alive har 5 daqiqada log to'ldirmasin.
+   */
   if (!isWorkersRuntime) {
+    app.use(
+      pinoHttp({
+        logger,
+        autoLogging: { ignore: (req) => req.url === '/health' },
+        customLogLevel: (_req, res, err) =>
+          err || res.statusCode >= 500 ? 'error' : res.statusCode >= 400 ? 'warn' : 'info',
+        customSuccessMessage: (req, res) =>
+          `${req.method} ${req.url} ${res.statusCode} ${Math.round(Number(res.getHeader('x-response-time') ?? 0))}ms`,
+        redact: {
+          paths: [
+            'req.headers.authorization',
+            'req.headers.cookie',
+            'res.headers["set-cookie"]',
+            'req.body.password',
+            'req.body.newPassword',
+            'req.body.currentPassword',
+            'req.body.token',
+            'req.body.code',
+          ],
+          censor: '***',
+        },
+      }),
+    );
+  }
+
+  // Rasm yuklash papkasini ochiq qilamiz — FAQAT lokal ishlab chiqishda.
+  // Production'da lokal disk ephemeral, shu sababli rasm saqlash media
+  // worker (R2) yoki Cloudinary orqali bo'ladi.
+  if (!isWorkersRuntime && !isProd) {
     app.use(
       '/uploads/dishes',
       express.static(path.resolve(process.cwd(), 'uploads', 'dishes')),
@@ -122,11 +172,31 @@ export function createApp() {
    * Client Google OAuth'dan oldin shu endpoint orqali Render server
    * uyg'onganini tekshiradi. Javob keshlanmasligi kerak — aks holda
    * server uxlab qolgan bo'lsa ham eski 200 qaytishi mumkin.
+   *
+   * Endi MongoDB holati ham tekshiriladi: baza uzilgan bo'lsa 503.
+   * Ilgari bu har doim 200 qaytarardi va Render nosozlikni sezmasdi.
    */
   app.get('/health', (_req, res) => {
     res.setHeader('Cache-Control', 'no-store');
     res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-    res.json({ success: true, message: 'Boyxon API ishlayapti', data: { time: new Date().toISOString() } });
+
+    let dbState = -1;
+    try {
+      dbState = mongoose.connection.readyState;
+    } catch {
+      dbState = -1;
+    }
+    const dbUp = dbState === 1;
+
+    res.status(dbUp ? 200 : 503).json({
+      success: dbUp,
+      message: dbUp ? 'Boyxon API ishlayapti' : 'Baza ulanmagan',
+      data: {
+        time: new Date().toISOString(),
+        db: dbUp ? 'up' : 'down',
+        uptime: Math.round(process.uptime()),
+      },
+    });
   });
 
   // SEO: sitemap har doim dinamik (taomlar bazadan olinadi).

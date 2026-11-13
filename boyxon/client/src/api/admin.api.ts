@@ -25,7 +25,19 @@ export const adminApi = {
   stats: () => api.get<ApiOk<AdminStats>>('/admin/stats').then((r) => r.data),
 
   updateSettings: (
-    body: Partial<Pick<PublicSettings, 'kitchenOpen' | 'cardNumber' | 'cardHolder'>>,
+    body: Partial<
+      Pick<
+        PublicSettings,
+        | 'kitchenOpen'
+        | 'cardNumber'
+        | 'cardHolder'
+        | 'deliveryBaseFee'
+        | 'deliveryPerKm'
+        | 'freeDeliveryFrom'
+        | 'deliveryMaxKm'
+        | 'prepTimeMin'
+      >
+    >,
   ) => api.patch<ApiOk<PublicSettings>>('/admin/settings', body).then((r) => r.data),
 
   dishes: (params: Record<string, unknown> = {}) =>

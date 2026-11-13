@@ -38,7 +38,7 @@ export function validate(schemas: Schemas) {
          */
         const seen = new Set<string>();
         const parts: string[] = [];
-        for (const issue of e.errors) {
+        for (const issue of e.issues) {
           const field = issue.path.join('.');
           const msg = issue.message;
           if (seen.has(msg)) continue; // bir xil xabarni takrorlamaymiz

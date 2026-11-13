@@ -6,6 +6,12 @@ export interface PublicSettings {
   /** Karta o'tkazmasi uchun rekvizitlar. Bo'sh bo'lsa, karta usuli ko'rsatilmaydi. */
   cardNumber: string;
   cardHolder: string;
+  /** Yetkazib berish tarifi — masofa bo'yicha narx hisobi uchun. */
+  deliveryBaseFee: number;
+  deliveryPerKm: number;
+  freeDeliveryFrom: number;
+  deliveryMaxKm: number;
+  prepTimeMin: number;
 }
 
 export type KitchenStatus = PublicSettings;

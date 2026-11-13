@@ -32,6 +32,8 @@ export interface OrderDoc extends Document {
   taxi?: { driver?: string; carNumber?: string; service?: string; note?: string };
   estimatedDeliveryAt?: Date;
   deliveredAt?: Date;
+  /** Hisoblangan masofa (km) — yetkazish narxi va ETA uchun. */
+  deliveryDistanceKm?: number;
   cancelReason?: string;
   notes?: string;
 }
@@ -89,11 +91,23 @@ const OrderSchema = new Schema<OrderDoc>(
     taxi: { driver: String, carNumber: String, service: String, note: String },
     estimatedDeliveryAt: { type: Date },
     deliveredAt: { type: Date },
+    deliveryDistanceKm: { type: Number, min: 0 },
     cancelReason: { type: String },
     notes: { type: String, maxlength: 500 },
   },
   { timestamps: true },
 );
+
+// ---------------------------------------------------------------------------
+// So'rov indekslari. Ilgari Order'da birorta ham indeks yo'q edi — admin
+// panelidagi ro'yxat, "mening buyurtmalarim" va promo hisoblash hammasi
+// collection scan qilardi (buyurtmalar ko'payganda sezilarli sekinlashadi).
+// ---------------------------------------------------------------------------
+OrderSchema.index({ user: 1, createdAt: -1 });
+OrderSchema.index({ status: 1, createdAt: -1 });
+OrderSchema.index({ promoCode: 1, user: 1, status: 1 });
+OrderSchema.index({ createdAt: -1 });
+OrderSchema.index({ paymentStatus: 1, createdAt: -1 });
 
 OrderSchema.pre('save', async function (next) {
   if (!this.orderNumber) {
