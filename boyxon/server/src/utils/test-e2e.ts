@@ -174,6 +174,48 @@ async function main(): Promise<void> {
   check('POST /promos/validate WELCOME10 → 200', promo.status === 200, `status ${promo.status} ${JSON.stringify(promo.body)}`);
 
   const orderItems = dishList.slice(0, 2).map((d) => ({ dish: d._id, quantity: 2 }));
+
+  // ── Quote: narx serverda hisoblanadi, buyurtma YARATILMAYDI ──
+  {
+    const before = await request(base, 'GET', '/users/me/orders?limit=1', undefined, cookie ?? undefined, accessToken);
+    const beforeCount = (before.body as { pagination?: { total?: number } }).pagination?.total ?? 0;
+
+    const quote = await request(base, 'POST', '/orders/quote',
+      { items: orderItems, deliveryType: 'delivery', address: { label: 'Uy', address: 'Toshkent' }, promoCode: 'WELCOME10' },
+      cookie ?? undefined, accessToken);
+    const q = (quote.body as { data?: { subtotal: number; deliveryFee: number; discount: number; total: number; etaMinutes: number; lines: unknown[] } }).data;
+    check(
+      'POST /orders/quote → 200 + to‘g‘ri summalar',
+      quote.status === 200 &&
+        !!q &&
+        q.subtotal > 0 &&
+        q.lines.length === orderItems.length &&
+        q.total === Math.max(0, q.subtotal + q.deliveryFee - q.discount) &&
+        q.etaMinutes > 0,
+      `status ${quote.status} ${JSON.stringify(quote.body)}`,
+    );
+
+    const pickupQuote = await request(base, 'POST', '/orders/quote',
+      { items: orderItems, deliveryType: 'pickup' }, cookie ?? undefined, accessToken);
+    check(
+      'Quote (pickup) → yetkazish bepul',
+      pickupQuote.status === 200 &&
+        (pickupQuote.body as { data: { deliveryFee: number } }).data?.deliveryFee === 0,
+      `status ${pickupQuote.status} ${JSON.stringify(pickupQuote.body)}`,
+    );
+
+    const noAuthQuote = await request(base, 'POST', '/orders/quote', {
+      items: orderItems,
+      deliveryType: 'pickup',
+    });
+    check('Quote auth talab qiladi → 401', noAuthQuote.status === 401, `status ${noAuthQuote.status}`);
+
+    // Quote hech qanday buyurtma yozmasligi kerak (promo ham "claim" qilinmaydi).
+    const after = await request(base, 'GET', '/users/me/orders?limit=1', undefined, cookie ?? undefined, accessToken);
+    const afterCount = (after.body as { pagination?: { total?: number } }).pagination?.total ?? 0;
+    check('Quote buyurtma yaratmaydi', beforeCount === afterCount, `${beforeCount} -> ${afterCount}`);
+  }
+
   const order = await request(base, 'POST', '/orders',
     { items: orderItems, deliveryType: 'delivery', address: { label: 'Uy', address: 'Toshkent' }, paymentMethod: 'cash' },
     cookie ?? undefined, accessToken);

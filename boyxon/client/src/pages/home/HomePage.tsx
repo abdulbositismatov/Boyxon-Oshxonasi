@@ -13,7 +13,7 @@ import { Seo } from '../../components/seo/Seo';
 import { HomeHero } from '../../components/home/HomeHero';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useCartStore } from '../../store/cart.store';
-import { DELIVERY_FEE, FREE_DELIVERY_FROM, QUERY_KEYS } from '../../lib/constants';
+import { QUERY_KEYS } from '../../lib/constants';
 import { formatPrice, localizedDishName, tVal } from '../../lib/format';
 import { absoluteUrl, canonicalFor, pathLang, SITE_URL, withLang } from '../../lib/seo';
 

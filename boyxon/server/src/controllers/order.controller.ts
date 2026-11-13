@@ -139,6 +139,94 @@ type CreateBody = {
   notes?: string;
 };
 
+type QuoteBody = {
+  items: { dish: string; quantity: number; customizations?: string }[];
+  deliveryType: 'delivery' | 'pickup';
+  address?: { label?: string; address?: string; lat?: number; lng?: number };
+  promoCode?: string;
+};
+
+/**
+ * Promo kodni tekshiradi va chegirmani hisoblaydi — **claim qilmaydi**.
+ *
+ * `quote` ham, `create` ham shu funksiyadan foydalanadi, shuning uchun
+ * mijoz ko'rgan chegirma va haqiqiy buyurtmadagi chegirma doim bir xil.
+ * Atomar "band qilish" (usedCount++, PromoRedemption) `createOrder` da.
+ */
+async function resolvePromo(opts: {
+  code?: string;
+  subtotal: number;
+  userId: string;
+}): Promise<{ promoDoc: PromoDoc; discount: number; myCount: number } | null> {
+  if (!opts.code) return null;
+
+  const code = opts.code.toUpperCase().trim();
+  const promoDoc = await Promo.findOne({ code });
+  if (!promoDoc || !promoDoc.isActive) throw ApiError.badRequest('Promo kod noto‘g‘ri');
+  const now = new Date();
+  if (promoDoc.validFrom && promoDoc.validFrom > now) throw ApiError.badRequest('Promo hali boshlanmagan');
+  if (promoDoc.validUntil && promoDoc.validUntil < now) throw ApiError.badRequest('Promo muddati o‘tgan');
+  if (opts.subtotal < promoDoc.minOrderAmount) throw ApiError.badRequest('Minimal summa yetmadi');
+  if (promoDoc.usageLimit != null && promoDoc.usedCount >= promoDoc.usageLimit) {
+    throw ApiError.badRequest('Promo limiti tugagan');
+  }
+  const myCount = await PromoRedemption.countDocuments({ promo: promoDoc._id, user: opts.userId });
+  if (myCount >= promoDoc.perUserLimit) throw ApiError.badRequest('Bu promodan foydalangansiz');
+
+  return {
+    promoDoc,
+    discount: calcDiscount(promoDoc.type, promoDoc.value, opts.subtotal, promoDoc.maxDiscount),
+    myCount,
+  };
+}
+
+/**
+ * POST /api/orders/quote — narxni hisoblaydi, buyurtma YARATMAYDI.
+ *
+ * Savatcha/checkout'dagi summalar serverdan olinadi. Ilgari client
+ * `DELIVERY_FEE` va `FREE_DELIVERY_FROM` ni qattiq yozgan edi — admin
+ * tarifni o'zgartirsa mijoz boshqa summani ko'rardi.
+ */
+export const quoteOrder = asyncHandler(async (req: Request, res: Response) => {
+  const userId = (req as AuthRequest).user!.id;
+  const { items, deliveryType, address, promoCode } = req.body as QuoteBody;
+
+  const settings = await Setting.findOne({ key: 'main' }).lean();
+
+  const dishes = await Dish.find({ _id: { $in: items.map((i) => i.dish) }, isActive: true });
+  if (dishes.length !== items.length) throw ApiError.badRequest('Ba’zi taomlar topilmadi');
+
+  let subtotal = 0;
+  const lines = items.map((i) => {
+    const d = dishes.find((x) => x.id === i.dish);
+    if (!d) throw ApiError.badRequest('Taom topilmadi');
+    if (typeof d.stock === 'number' && d.stock < i.quantity) {
+      throw ApiError.badRequest(`"${d.name}" tugagan yoki yetarli emas`);
+    }
+    subtotal += d.price * i.quantity;
+    return { dish: d.id, name: d.name, price: d.price, quantity: i.quantity };
+  });
+
+  const delivery = quoteDelivery({ deliveryType, subtotal, address, policy: settings });
+  const promo = await resolvePromo({ code: promoCode, subtotal, userId });
+  const discount = promo?.discount ?? 0;
+
+  res.json(
+    ok({
+      lines,
+      subtotal,
+      deliveryFee: delivery.fee,
+      discount,
+      total: Math.max(0, subtotal + delivery.fee - discount),
+      distanceKm: delivery.distanceKm,
+      etaMinutes: delivery.etaMinutes,
+      freeDeliveryFrom: settings?.freeDeliveryFrom ?? 150_000,
+      kitchenOpen: settings?.kitchenOpen !== false,
+      promoCode: promo?.promoDoc.code,
+    }),
+  );
+});
+
 /**
  * POST /api/orders — buyurtma yaratish (auth).
  * Promo tekshiriladi, jami hisoblanadi, email + notification + socket yuboriladi.
@@ -181,22 +269,16 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
   let discount = 0;
   let promoDoc: PromoDoc | null = null;
   let redemptionSeq: number | null = null;
-  if (promoCode) {
-    const code = promoCode.toUpperCase().trim();
-    promoDoc = await Promo.findOne({ code });
-    if (!promoDoc || !promoDoc.isActive) throw ApiError.badRequest('Promo kod noto‘g‘ri');
-    const now = new Date();
-    if (promoDoc.validFrom && promoDoc.validFrom > now) throw ApiError.badRequest('Promo hali boshlanmagan');
-    if (promoDoc.validUntil && promoDoc.validUntil < now) throw ApiError.badRequest('Promo muddati o‘tgan');
-    if (subtotal < promoDoc.minOrderAmount) throw ApiError.badRequest('Minimal summa yetmadi');
+  const promo = await resolvePromo({ code: promoCode, subtotal, userId });
+  if (promo) {
+    promoDoc = promo.promoDoc;
+    discount = promo.discount;
     // ATOMAR perUserLimit: har bir ishlatish uchun PromoRedemption yozuvi
     // yaratiladi. `(promo, user, seq)` unique bo'lgani uchun ikki parallel
     // so'rov bir xil seq'ni olishga urinsa — ikkinchisi E11000 bilan rad etiladi.
-    const myCount = await PromoRedemption.countDocuments({ promo: promoDoc._id, user: userId });
-    if (myCount >= promoDoc.perUserLimit) throw ApiError.badRequest('Bu promodan foydalangansiz');
     try {
-      await PromoRedemption.create({ promo: promoDoc._id, user: userId, seq: myCount });
-      redemptionSeq = myCount;
+      await PromoRedemption.create({ promo: promoDoc._id, user: userId, seq: promo.myCount });
+      redemptionSeq = promo.myCount;
     } catch (err) {
       if ((err as { code?: number }).code === 11000) {
         throw ApiError.badRequest('Bu promodan foydalangansiz');
@@ -217,12 +299,6 @@ export const createOrder = asyncHandler(async (req: Request, res: Response) => {
     } else {
       await Promo.findByIdAndUpdate(promoDoc._id, { $inc: { usedCount: 1 } });
     }
-    // perUserLimit ham atomar bo'lishi kerak — Order yaratilganda faqat bitta
-    // so'rov Muvaffaqiyatli bo'lishi uchun unique index (user, promoCode) kerak.
-    // Mongoose schema'da bu index mavjud emas, shuning uchunController oldindan
-    // countDocuments tekshiradi (yuqorida) — race ehtimoli kam, lekin 100% himoya
-    // uchun DB index qo'shish tavsiya etiladi (Promo.model.ts ga qўshilishi kerak).
-    discount = calcDiscount(promoDoc.type, promoDoc.value, subtotal, promoDoc.maxDiscount);
   }
 
   const total = subtotal + deliveryFee - discount;

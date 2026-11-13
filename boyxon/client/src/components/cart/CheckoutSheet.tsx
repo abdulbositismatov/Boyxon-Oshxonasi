@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { Check, CheckCircle2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
@@ -48,6 +48,16 @@ export function CheckoutSheet() {
   const [created, setCreated] = useState<Order | null>(null);
 
   const addresses = user?.addresses ?? [];
+  const selectedAddress = addresses.find((a) => a._id === addressId);
+  const quoteAddress =
+    deliveryType === 'delivery' && selectedAddress?.address
+      ? {
+          label: selectedAddress.label,
+          address: selectedAddress.address,
+          lat: selectedAddress.lat,
+          lng: selectedAddress.lng,
+        }
+      : undefined;
 
   /** Manzil uchun barqaror React key: yangi manzil hali _id olmaganda ham ishlaydi. */
   const addrKey = (a: { _id?: string; label: string; address: string }): string =>
@@ -73,8 +83,50 @@ export function CheckoutSheet() {
     if (!cardEnabled && paymentMethod === 'card') setPaymentMethod('cash');
   }, [cardEnabled, paymentMethod]);
 
-  const deliveryFee = deliveryType === 'pickup' || subtotal >= FREE_DELIVERY_FROM ? 0 : DELIVERY_FEE;
-  const total = Math.max(0, subtotal + deliveryFee - discount);
+  /**
+   * Narxni serverdan so'raymiz — yetkazish tarifi va chegirma yagona manbadan.
+   * Ilgari bu yerda `DELIVERY_FEE` qattiq yozilgan edi: admin tarifni
+   * o'zgartirsa, mijoz boshqa summani ko'rib, boshqasini to'lardi.
+   */
+  const quoteEnabled =
+    checkoutOpen &&
+    lines.length > 0 &&
+    !created &&
+    (deliveryType === 'pickup' || Boolean(quoteAddress?.address));
+  const quoteKey = lines.map((l) => `${l.dishId}:${l.quantity}`).join(',');
+  const {
+    data: quote,
+    error: quoteError,
+  } = useQuery({
+    queryKey: ['order-quote', quoteKey, deliveryType, addressId, promoCode ?? ''],
+    queryFn: () =>
+      ordersApi.quote({
+        items: lines.map((l) => ({ dish: l.dishId, quantity: l.quantity })),
+        deliveryType,
+        address: quoteAddress,
+        promoCode,
+      }),
+    enabled: quoteEnabled,
+    retry: false,
+    staleTime: 20_000,
+    refetchOnWindowFocus: false,
+  });
+
+  // Server javobi kelguncha admin sozlamalaridan taxminiy qiymat ko'rsatamiz
+  // (sahifa "sakrab" ketmasligi uchun).
+  const freeFrom = quote?.freeDeliveryFrom ?? kitchen?.freeDeliveryFrom ?? FREE_DELIVERY_FROM;
+  const baseFee = kitchen?.deliveryBaseFee ?? DELIVERY_FEE;
+  const fallbackFee = deliveryType === 'pickup' || subtotal >= freeFrom ? 0 : baseFee;
+  const deliveryFee = quote?.deliveryFee ?? fallbackFee;
+  const effectiveDiscount = quote?.discount ?? discount;
+  const total = quote?.total ?? Math.max(0, subtotal + deliveryFee - effectiveDiscount);
+
+  // Radiusdan tashqaridagi manzil — aniq xabar (buyurtma tugmasi bloklanadi).
+  const quoteErr = quoteError as { response?: { data?: { message?: string } } } | null;
+  const outOfRange = Boolean(quoteErr?.response?.data?.message);
+  // Narx hali serverdan kelmagan bo'lsa buyurtma tugmasi bosilmaydi —
+  // mijoz ko'rgan summa bilan yuboriladigan summa bir xil bo'lishi uchun.
+  const quotePending = quoteEnabled && !quote;
 
   const mutation = useMutation({
     mutationFn: () => {
@@ -152,6 +204,12 @@ export function CheckoutSheet() {
           <div role="alert" className="rounded-2xl border border-danger/20 bg-danger/10 px-3 py-3 text-sm text-danger">
             <p className="font-semibold">{t('kitchen.closed')}</p>
             <p className="mt-0.5">{t('kitchen.desc_closed')}</p>
+          </div>
+        )}
+
+        {outOfRange && (
+          <div role="alert" className="rounded-2xl border border-danger/20 bg-danger/10 px-3 py-3 text-sm text-danger">
+            {quoteErr?.response?.data?.message}
           </div>
         )}
 
@@ -260,12 +318,26 @@ export function CheckoutSheet() {
           />
         </div>
 
-        <CartSummary subtotal={subtotal} deliveryFee={deliveryFee} discount={discount} total={total} />
+        <CartSummary
+          subtotal={subtotal}
+          deliveryFee={deliveryFee}
+          discount={effectiveDiscount}
+          total={total}
+          freeDeliveryFrom={freeFrom}
+          baseDeliveryFee={baseFee}
+        />
 
         <Button
           className="w-full"
           size="lg"
-          disabled={!lines.length || mutation.isPending || kitchenClosed || (deliveryType === 'delivery' && !addressId)}
+          disabled={
+            !lines.length ||
+            mutation.isPending ||
+            quotePending ||
+            outOfRange ||
+            kitchenClosed ||
+            (deliveryType === 'delivery' && !addressId)
+          }
           onClick={() => mutation.mutate()}
         >
           {mutation.isPending ? t('cart.processing') : kitchenClosed ? t('kitchen.closed') : t('cart.checkout')}
