@@ -40,6 +40,12 @@ export async function ensureAdminAccount(): Promise<void> {
   if (existing.role !== 'admin') patch.role = 'admin';
   if (!existing.emailVerified) patch.emailVerified = true;
   if (!existing.isActive) patch.isActive = true;
+  // Admin env'dan boshqariladi: eski muvaffaqiyatsiz urinishlar hisobni
+  // vaqtincha bloklab qo'ygan bo'lsa, deploy'dan keyin kirish tiklanadi.
+  if (existing.lockedUntil || existing.failedLoginAttempts > 0) {
+    patch.lockedUntil = null;
+    patch.failedLoginAttempts = 0;
+  }
 
   const passwordMatches =
     Boolean(existing.password) && (await existing.comparePassword(env.ADMIN_PASSWORD));
