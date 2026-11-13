@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "boyxon-media",
+  "main": "src/index.js",
+  "compatibility_date": "2025-01-01",
+  "kv_namespaces": [
+    {
+      "binding": "MEDIA",
+      "id": "3212e27721fa470cac0eccd8b2f3c063"
+    }
+  ]
+}
