@@ -6,9 +6,16 @@ import { env } from './config/env';
 import { attachRealtimeServer } from './realtime-node';
 import { logger } from './utils/logger';
 import { sendAlert } from './utils/alert';
+import { ensureAdminAccount } from './utils/ensure-admin';
 
 async function main(): Promise<void> {
   await connectDb();
+
+  // Admin panelga kirish env'dagi ADMIN_EMAIL/ADMIN_PASSWORD orqali kafolatlanadi.
+  // Xato bo'lsa serverni to'xtatmaymiz — faqat logga yozamiz.
+  await ensureAdminAccount().catch((err) => {
+    logger.error({ err: (err as Error)?.message }, 'Admin hisobini sinxronlashda xato');
+  });
   const app = createApp();
   const server = http.createServer(app);
 
