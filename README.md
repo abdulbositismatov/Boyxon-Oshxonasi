@@ -32,14 +32,16 @@ npm run dev
 | Qism | Texnologiya | Manzil |
 |------|-------------|--------|
 | Frontend | React 18 + Vite + TS + Tailwind | `boyxon/client` |
-| Backend | Express + TS + Mongoose + Socket.IO | `boyxon/server` |
+| Backend | Express + TS + Mongoose + native WebSocket | `boyxon/server` |
 | Mobil ilova | Flutter | `boyxon/mobile` |
 | DB (lokal) | MongoDB (docker-compose) | `docker-compose.yml` |
-| Deploy | Render Blueprint | `render.yaml` |
+| Deploy | Render Blueprint (bepul) | `render.yaml` |
+| Rasmlar | Cloudflare Worker + KV (bepul) | `ops/media-worker` |
 
 ## 📄 Dokumentatsiya
 
 - [README (boyxon/)](boyxon/README.md) — ishga tushirish, API, deploy, testlar
+- [DEPLOYMENT.md](DEPLOYMENT.md) — **productionga chiqarish (100% bepul arxitektura)**
 - [DESIGN.md](DESIGN.md) — dizayn tizimi (rang, shrift, ekranlar)
 - [SECURITY.md](boyxon/SECURITY.md) — xavfsizlik choralari va deploy oldi tekshiruvlar
 - [CONTRIBUTING.md](CONTRIBUTING.md) — hissa qo'shish qo'llanmasi
@@ -48,7 +50,8 @@ npm run dev
 
 ```bash
 cd boyxon/server
-npm test   # 63 ta e2e tekshiruv (auth, dishes, orders, admin, injection, hokazo)
+npm run test:unit   # 12 ta unit test (narx, ETA, chegirma)
+npm test            # 76 ta e2e tekshiruv (auth, dishes, orders, admin, injection)
 ```
 
 ## 📜 Litsenziya
