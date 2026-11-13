@@ -53,6 +53,12 @@ async function main(): Promise<void> {
   process.env.ADMIN_EMAIL = 'admin@boyxon.uz';
   process.env.ADMIN_PASSWORD = 'Admin123!';
   process.env.NODE_ENV = 'test';
+  // Test muhiti qat'iy belgilanadi: lokalda SMTP sozlangan bo'lsa ham,
+  // CI'da esa hech qanday provayder bo'lmasa ham — bir xil yo'l tekshiriladi.
+  // (Aks holda env.ts "email yo'q" deb tasdiqlashni avtomatik o'chirib qo'yardi
+  // va "tasdiqlanmagan hisob kira olmaydi" testi CI'da yiqilardi.)
+  process.env.ALLOW_UNVERIFIED_LOGIN = 'false';
+  process.env.EMAIL_PROVIDER = 'none';
 
   const { connectDb } = await import('../config/db');
   await connectDb();
