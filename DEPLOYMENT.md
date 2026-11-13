@@ -16,7 +16,7 @@ Render Web Service (bepul, 512MB)
       │
       ├── MongoDB Atlas M0 (bepul, 512MB)
       ├── Cloudflare Worker: boyxon-media → KV (rasmlar, bepul)
-      └── Resend (email, bepul 100 xat/kun)
+      └── Brevo HTTP API (email, bepul 300 xat/kun)
 
 Cloudflare Worker: boyxon-keepalive (cron, bepul)
       └── 06:00–20:00 har 5 daqiqada Render'ni uyg'oq tutadi
@@ -30,7 +30,7 @@ Cloudflare Worker: boyxon-keepalive (cron, bepul)
 | MongoDB Atlas M0 | 512 MB | kichik restoran uchun yetarli |
 | Cloudflare Workers | 100 000 so'rov/kun | media + keep-alive |
 | Cloudflare KV | 1 GB, 100k o'qish/kun, 1k yozish/kun | menyu rasmlari |
-| Resend | 100 xat/kun | tasdiqlash + buyurtma xatlari |
+| Brevo | 300 xat/kun | tasdiqlash + buyurtma xatlari |
 | GitHub Actions | 2000 daqiqa/oy (public repo: cheksiz) | CI + kunlik backup |
 
 **Pullik xizmat yo'q.** Cloudflare R2 va Atlas backup kabi pullik/to'lov usuli
@@ -63,14 +63,39 @@ node -e "console.log(require('crypto').randomBytes(48).toString('hex'))"
 
 ### Email (Render'da SMTP bloklangan — HTTP provayder SHART)
 
+**Tavsiya: Brevo** — bepul 300 xat/kun, domen shart emas (Gmail manzilini
+tasdiqlash kifoya). Resend'da esa begona odamga xat yuborish uchun domen
+tasdiqlash kerak (domen pullik).
+
+#### Brevo (bepul, domen kerak emas)
+
+1. https://app.brevo.com → ro'yxatdan o'tish
+2. **Senders & IP** → **Add a sender** → o'z Gmail manzilingizni kiriting
+3. Kelgan xatdagi havolani bosing (manzil tasdiqlanadi)
+4. **SMTP & API** → **API Keys** → **Generate a new API key**
+5. Render → Environment:
+
+| Kalit | Qiymat |
+|---|---|
+| `EMAIL_PROVIDER` | `brevo` |
+| `BREVO_API_KEY` | `xkeysib-...` |
+| `EMAIL_FROM` | `Boyxon Oshxonasi <sizning@gmail.com>` |
+
+#### Resend (muqobil — domen kerak)
+
 | Kalit | Qiymat |
 |---|---|
 | `EMAIL_PROVIDER` | `resend` |
 | `RESEND_API_KEY` | `re_...` |
 | `EMAIL_FROM` | `Boyxon Oshxonasi <no-reply@sizningdomen.uz>` |
 
-Resend'da domen tasdiqlanmaguncha faqat o'z emailingizga xat yuborish mumkin.
-Domen yo'q bo'lsa, `onboarding@resend.dev` dan foydalaning (test uchun).
+Domen tasdiqlanmaguncha Resend faqat `onboarding@resend.dev` orqali va faqat
+o'z manzilingizga xat yuboradi — real mijozlar uchun yaramaydi.
+
+> `ALLOW_UNVERIFIED_LOGIN=false` (default) bo'lganda email provayderi
+> ishlamasa, yangi mijoz ro'yxatdan o'tadi, lekin tasdiqlash xatini olmaydi
+> va kira olmaydi. Shuning uchun **email provayderi production uchun majburiy**.
+> Vaqtinchalik yechim: `ALLOW_UNVERIFIED_LOGIN=true` (tavsiya etilmaydi).
 
 ### Rasmlar (media worker)
 
@@ -151,12 +176,14 @@ mongorestore --uri="<MONGODB_URI>" --archive=boyxon-YYYYMMDD-HHMMSS.gz --gzip
 
 - [ ] Barcha sekretlar Render'da kiritilgan
 - [ ] `https://<server>/health` → 200 va `db: "up"`
-- [ ] Resend'dan test xat yuborildi
+- [ ] Brevo'dan test xat yuborildi (ro'yxatdan o'tish → tasdiqlash xati keldi)
+- [ ] Admin panel → oshxona **ochiq** holatda (yopiq bo'lsa buyurtma qabul qilinmaydi)
 - [ ] Admin panelda bitta taom rasmi yuklandi va u `boyxon-media...` URL'da ochildi
 - [ ] Render'ni qayta deploy qilib, rasm saqlanib qolganini tekshirish
   (ephemeral disk muammosi yopilganini tasdiqlaydi)
 - [ ] Test buyurtma: to'lov usuli, yetkazish narxi, ETA to'g'ri
 - [ ] Admin panelda oshxona ochiq/yopiq va tarif sozlamalari ishlaydi
+- [ ] GitHub → Settings → Secrets → `MONGODB_URI` qo'shilgan (kunlik backup uchun)
 - [ ] `npm audit --omit=dev` → 0 zaiflik
 - [ ] MongoDB Atlas'da IP whitelist: `0.0.0.0/0` (Render IP'lari dinamik)
 - [ ] Atlas'da kuchli parol va alohida foydalanuvchi (admin huquqisiz)

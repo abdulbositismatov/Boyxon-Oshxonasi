@@ -60,6 +60,11 @@ services:
       # ADMIN_PASSWORD        = (kuchli, >=12)
       #
       # --- Email (Render bepul SMTP portlarini bloklaydi — HTTP provayder SHART) ---
+      # Brevo (tavsiya, bepul 300/kun, domen shart emas):
+      # EMAIL_PROVIDER        = brevo
+      # BREVO_API_KEY         = xkeysib-...
+      # EMAIL_FROM            = Boyxon Oshxonasi <sizning@gmail.com>
+      # Muqobil — Resend (domen tasdiqlash kerak):
       # EMAIL_PROVIDER        = resend
       # RESEND_API_KEY        = re_...
       # EMAIL_FROM            = Boyxon Oshxonasi <no-reply@yourdomain.uz>
